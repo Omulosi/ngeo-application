@@ -1,0 +1,4 @@
+export const BOUNDARY_ZINDEX_OFFSET = 10;
+export const INSTALLATIONS_ZINDEX_OFFSET = 100;
+export const MYDATA_ZINDEX_OFFSET = 200;
+export const IDLE_TIMEOUT_IN_MINUTES = 5;
