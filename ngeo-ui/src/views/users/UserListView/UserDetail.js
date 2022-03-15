@@ -6,6 +6,7 @@ import SuccessChip from 'src/components/SuccessChip';
 import capitalize from 'src/utils/capitalize';
 import FailureChip from 'src/components/FailureChip';
 import { roleNames as roles, roles as userRoles } from 'src/config';
+import { useLocation } from 'react-router';
 
 /*eslint-disable */
 const UserDetail = ({ details }) => {
@@ -20,33 +21,29 @@ const UserDetail = ({ details }) => {
     area
   } = details;
 
+  const { state } = useLocation();
+
+  console.log({ state });
+
   let userArea = null;
   if (role == userRoles.RM) {
     userArea =
       area && area.region ? `${area.region} Region` : 'Area not assigned';
   }
   if (role == userRoles.CM) {
-    userArea =
-      area && area.county ? `${area.county} County` : 'Area not assigned';
+    userArea = area?.county ? `${area.county} County` : 'Area not assigned';
   }
 
   if (role == userRoles.FOO) {
-    let county = area.county && `County: ${area.county}`;
+    let county = area?.county && `County: ${area.county}`;
     let constituency =
-      area.constituency &&
-      area.constituency.length > 0 &&
-      `Constituency: ${area.constituency}`;
+      area?.constituency?.length && `Constituency: ${area?.constituency}`;
     let subCounty =
-      area.sub_county &&
-      area.sub_county.length > 0 &&
-      `Sub-County: ${area.sub_county}`;
-    let location =
-      area.location && area.location.length > 0 && `Location: ${area.location}`;
+      area?.sub_county?.length && `Sub-County: ${area?.sub_county}`;
+    let location = area?.location?.length && `Location: ${area?.location}`;
     let subLocation =
-      area.sub_location &&
-      area.sub_location.length > 0 &&
-      `Sub-Location: ${area.sub_location}`;
-    let ward = area.ward && area.ward.length > 0 && `Ward: ${area.ward}`;
+      area?.sub_location?.length && `Sub-Location: ${area?.sub_location}`;
+    let ward = area?.ward?.length && `Ward: ${area?.ward}`;
     userArea = [county, constituency, subCounty, location, subLocation, ward]
       .filter((area) => Boolean(area))
       .join(', ');

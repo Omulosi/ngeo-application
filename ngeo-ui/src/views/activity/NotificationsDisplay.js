@@ -20,7 +20,6 @@ import {
   makeStyles
 } from '@material-ui/core';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import { useNavigate } from 'react-router';
 import ApproveDialog from './ApproveDialog';
 import { useFOO } from 'src/fetch/permissions';
 import { markNotificationRead } from 'src/redux/actions/notificationAction';

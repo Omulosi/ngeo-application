@@ -5,10 +5,19 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 /* eslint-disable */
-const ComboBox = ({ label, value, setValue, data, name, groupBy }) => {
+const ComboBox = ({
+  label,
+  value,
+  setValue,
+  data,
+  name,
+  groupBy,
+  disabled = false
+}) => {
   return (
     <Autocomplete
       id="combo-box"
+      disabled={disabled}
       value={value}
       onChange={(evt, newValue) => setValue(newValue)}
       options={data}

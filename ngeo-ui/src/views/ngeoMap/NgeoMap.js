@@ -152,7 +152,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
   const [measureType, setMeasureType] = React.useState('None');
   const [activeButton, setActiveButton] = React.useState('cancel');
 
-  // Map layers
+  // Map group layers
   const [adminLayers, setAdminLayers] = React.useState([]);
   const [installationLayers, setInstallationLayers] = React.useState([]);
   const [myDataLayers, setMyDataLayers] = React.useState([]);
@@ -403,22 +403,20 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
   const { data: themeData, isSuccess: themeSuccess } = useThemes();
 
   let themes =
-    (themeSuccess &&
-      themeData.map((theme) => ({
-        id: theme.id,
-        name: theme.attributes.name,
-        color: theme.attributes.color
-      }))) ||
-    [];
+    themeData?.map((theme) => ({
+      id: theme.id,
+      name: theme.attributes.name,
+      color: theme.attributes.color
+    })) || [];
 
   // Get is authenticated only after user query is complete
-  const isAuthenticated = userSuccess && user.isAuthenticated;
-  const userData = user ? user.attributes : {};
-  const isFinance = isFinanceOfficer(userData.role);
-  const isCEO = isUserCEO(userData.role);
-  const isCM = isCountyManager(userData.role);
-  const isRM = isRegionalManager(userData.role);
-  const isFOO = isFieldOfficer(userData.role);
+  const isAuthenticated = user?.isAuthenticated;
+  const userData = user?.attributes || {};
+  const isFinance = isFinanceOfficer(userData?.role);
+  const isCEO = isUserCEO(userData?.role);
+  const isCM = isCountyManager(userData?.role);
+  const isRM = isRegionalManager(userData?.role);
+  const isFOO = isFieldOfficer(userData?.role);
   let nationalBoundaryExtent = null;
 
   const interactions = [
@@ -433,8 +431,8 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
   }
 
   /** Prevents reloading of jurisdiction layer every time there is an update on the map e.g
-   * toggling installation items.
-   * user's area would blink on each reload
+   * when toggling installation items.
+   * User's area would blink on each reload if memoization is not used
    */
   const jurisdictionLayer = React.useMemo(() => {
     if (jurisdictionURL) {
@@ -457,8 +455,6 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
     }
     return null;
   }, [jurisdictionURL, showJurisdiction]);
-
-  console.log({ jurisdictionURL, jurisdictionLayer });
 
   React.useEffect(() => {
     if (!layers) {
@@ -645,13 +641,13 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               }
             }
 
-            if (userData.role && userData.role == roles.CM) {
+            if (userData?.role == roles.CM) {
               // Execute only only when layer name is county
               if (layerName.toLocaleLowerCase().includes('ke_county')) {
-                userArea = userData.area.county;
+                userArea = userData.area?.county;
                 // Nairobi region only has Nairobi County
                 if (
-                  userData.area.region.toLocaleLowerCase().includes('nairobi')
+                  userData.area?.region.toLocaleLowerCase().includes('nairobi')
                 ) {
                   userArea = 'Nairobi';
                 }
@@ -670,17 +666,17 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               }
             }
 
-            if (userData.role && userData.role == roles.FOO) {
-              let county = userData.area.county;
-              let constituency = userData.area.constituency;
-              let subCounty = userData.area.sub_county;
-              let division = userData.area.division;
-              let location = userData.area.location;
-              let subLocation = userData.area.sub_location;
+            if (userData?.role == roles.FOO) {
+              let county = userData.area?.county;
+              let constituency = userData.area?.constituency;
+              let subCounty = userData.area?.sub_county;
+              let division = userData.area?.division;
+              let location = userData.area?.location;
+              let subLocation = userData.area?.sub_location;
 
               // Nairobi region only has Nairobi County
               if (
-                userData.area.region.toLocaleLowerCase().includes('nairobi')
+                userData.area?.region.toLocaleLowerCase().includes('nairobi')
               ) {
                 county = 'Nairobi';
               }

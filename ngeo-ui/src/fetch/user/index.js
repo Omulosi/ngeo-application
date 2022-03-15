@@ -31,6 +31,16 @@ const assignRole = async ({ resourceId, data: user }) => {
   return data;
 };
 
+const updateUser = async (userDetails) => {
+  const userId = userDetails.id;
+  delete userDetails.id;
+  // Gives a 400 error
+  delete userDetails.email;
+  delete userDetails.role;
+  const { data } = await updateResource(`/users/${userId}`, userDetails);
+  return data;
+};
+
 // eslint-disable-next-line camelcase
 const activateUser = async ({ url, is_active }) => {
   const { data } = await updateResource(`${url}`, {
@@ -82,6 +92,26 @@ export function useActivateUser() {
     },
     onError: () => {
       enqueueSnackbar('Error activating user', {
+        variant: 'error'
+      });
+    }
+  });
+  return mutation;
+}
+
+export function useUpdateUser() {
+  const { enqueueSnackbar } = useSnackbar();
+  const queryClient = useQueryClient();
+  const mutation = useMutation(updateUser, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('user');
+      enqueueSnackbar('User details updated', {
+        variant: 'success'
+      });
+    },
+    onError: (err) => {
+      console.log({ err });
+      enqueueSnackbar('Error updating user details', {
         variant: 'error'
       });
     }

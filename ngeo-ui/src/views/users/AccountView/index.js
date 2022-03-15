@@ -38,12 +38,6 @@ const MyAccount = () => {
 
   const { data, isLoading: loading, isError: error, isSuccess } = useUser();
 
-  // if (error) {
-  //   enqueueSnackbar('Error loading profile data', {
-  //     variant: 'error'
-  //   });
-  // }
-
   let user = {};
   if (isSuccess) {
     user = data.attributes;

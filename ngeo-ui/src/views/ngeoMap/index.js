@@ -5,7 +5,7 @@ import Page from 'src/components/Page';
 import useLayerGroupAndCapabilityData from 'src/hooks/useLayerGroupAndCapabilityData';
 
 /**
- * Load information on layers from geoserver
+ * Loads layers information from geoserver
  */
 const Map = () => {
   const { layers, capabilities } = useLayerGroupAndCapabilityData();

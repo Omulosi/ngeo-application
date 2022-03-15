@@ -1,37 +1,22 @@
+/* eslint-disable operator-linebreak */
+/* eslint-disable indent */
+/* eslint-disable react/prop-types */
 import React from 'react';
 import clsx from 'clsx';
 import moment from 'moment';
-/* eslint-disable */
-import { Avatar, Box, Container, makeStyles, Tooltip } from '@material-ui/core';
-import Page from 'src/components/Page';
+// eslint-disable-next-line object-curly-newline
+import { Avatar, Box, Container, Tooltip, makeStyles } from '@material-ui/core';
 // import DataGridToolbar from 'src/components/DataGridToolbar';
 import { ArrowRight } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
-import { useSnackbar } from 'notistack';
-import LineProgress from 'src/components/LineProgress';
 import DataGridDisplay from 'src/components/DataGridDisplay';
 // import AddIcon from '@material-ui/icons/Add';
 import PageToolbar from 'src/components/PageToolbar';
 import FailureChip from 'src/components/FailureChip';
 import SuccessChip from 'src/components/SuccessChip';
-import useUser, { useUserList } from 'src/fetch/user';
 import { roleNames as roles } from 'src/config';
-import capitalize from 'src/utils/capitalize';
-import Loading from 'src/components/Loading';
-import UserList from './UserList';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    backgroundColor: theme.palette.background.dark,
-    minHeight: '100%',
-    paddingBottom: theme.spacing(3),
-    paddingTop: theme.spacing(3)
-  },
-  gridWrapper: {
-    height: '80vh',
-    width: '100%'
-  },
-  grid: {},
+const useStyles = makeStyles(() => ({
   dark: {
     color: '#263238',
     cursor: 'pointer',
@@ -50,27 +35,11 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: '0.7rem'
   }
 }));
-
-const UserListView = () => {
-  const classes = useStyles();
+const UserList = ({ userList, user, title }) => {
   const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar();
+  const classes = useStyles();
 
-  const { data: user, isSuccess: userSuccess } = useUser();
-
-  const { data, isLoading, error, isSuccess } = useUserList();
-
-  if (error) {
-    console.log(`Error => ${error}`);
-    enqueueSnackbar('Error fetching user list in HR module', {
-      variant: 'error'
-    });
-  }
-
-  let userList = [];
-  if (isSuccess) {
-    userList = data;
-  }
+  console.log({ userList });
 
   let rows =
     userList.length > 0
@@ -86,7 +55,7 @@ const UserListView = () => {
         })
       : [];
 
-  let columns = [];
+  const columns = [];
   const displayFields = [
     'id',
     'first_name',
@@ -190,24 +159,18 @@ const UserListView = () => {
   }
 
   // Skip current current from list of users
-  if (userSuccess && rows.length > 0) {
-    rows = rows
-      .filter((u) => u.email !== user.attributes.email)
-      .filter((u) => !u.is_staff);
-  }
+  rows = rows
+    ?.filter((u) => u.email !== user?.attributes.email)
+    ?.filter((u) => !u.is_staff);
 
   const userListData = { columns, rows };
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
   return (
-    <Page title="Registered Users" className={classes.root}>
-      <div className={classes.progress}>{isLoading && <LineProgress />}</div>
-      <UserList userList={userList} user={user} title="Registered Users" />
-    </Page>
+    <Container maxWidth={false}>
+      <PageToolbar title={title} />
+      <DataGridDisplay data={userListData} title={title} />
+    </Container>
   );
 };
 
-export default UserListView;
+export default UserList;

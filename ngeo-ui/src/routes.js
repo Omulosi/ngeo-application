@@ -1,8 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 
-/* eslint-disable */
-
 import MapProvider from 'src/views/ngeoMap/Map';
 
 // Layout
@@ -70,10 +68,10 @@ import RegionalManagerListView from 'src/views/regional_manager';
 import RegionalManagerProfile from 'src/views/regional_manager/RegionalManagerProfile';
 
 // Returns
-import AllAgentReturns from 'src/views/agent/AllAgentReturns';
-import AddReturnView from 'src/views/agent/AddReturn';
-import EditReturnView from 'src/views/agent/EditReturn';
-import ReturnDetailView from 'src/views/agent/ReturnDetails';
+// import AllAgentReturns from 'src/views/agent/AllAgentReturns';
+// import AddReturnView from 'src/views/agent/AddReturn';
+// import EditReturnView from 'src/views/agent/EditReturn';
+// import ReturnDetailView from 'src/views/agent/ReturnDetails';
 
 // User List
 import UserList from 'src/views/users/UserListView';
@@ -112,10 +110,10 @@ const routes = (isLoggedIn) => [
       { path: 'agents/edit/:id', element: <EditAgentView /> },
 
       // Agent Returns
-      { path: 'returns', element: <AllAgentReturns /> },
-      { path: 'returns/add', element: <AddReturnView /> },
-      { path: 'returns/edit/:id', element: <EditReturnView /> },
-      { path: 'returns/:id', element: <ReturnDetailView /> },
+      // { path: 'returns', element: <AllAgentReturns /> },
+      // { path: 'returns/add', element: <AddReturnView /> },
+      // { path: 'returns/edit/:id', element: <EditReturnView /> },
+      // { path: 'returns/:id', element: <ReturnDetailView /> },
 
       // projects views
       { path: 'projects', element: <ProjectsView /> },

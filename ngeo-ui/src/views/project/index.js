@@ -102,17 +102,6 @@ const Projects = () => {
     <Page title={`${siteNames.Project.name}s`} className={classes.root}>
       <div className={classes.progress}>{isLoading && <LineProgress />}</div>
       <Container maxWidth={false}>
-        {/** 
-         *   <DataGridToolbar
-          pageTitle={`${siteNames.Project.name}s`}
-          navLink="/app/projects/add"
-          btnIcon=
-          btnTitle="New Project"
-          btnDisabled={!isFinance}
-        />
-         * 
-         */}
-
         <EnhancedPageToolbar pageTitle={`${siteNames.Project.name}s`}>
           <Button
             color="primary"

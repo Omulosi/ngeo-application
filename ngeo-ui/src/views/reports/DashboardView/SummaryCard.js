@@ -13,10 +13,14 @@ import {
   makeStyles
 } from '@material-ui/core';
 import PeopleIcon from '@material-ui/icons/People';
+import FullScreenDialog from '../../../components/modals/FullScreenDialog';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: '100%'
+    height: '100%',
+    '& :hover': {
+      cursor: 'pointer'
+    }
   },
   avatar: {
     backgroundColor: colors.red[600],
@@ -32,31 +36,48 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const SummaryCard = ({ className, count, label, icon = null }) => {
+const SummaryCard = ({ children, className, count, label, icon = null }) => {
   const classes = useStyles();
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   if (!icon) {
     icon = <PeopleIcon />;
   }
 
   return (
-    <Card className={clsx(classes.root, className)}>
-      <CardContent>
-        <Grid container justify="space-between" spacing={3}>
-          <Grid item>
-            <Typography color="textSecondary" gutterBottom variant="h6">
-              {label}
-            </Typography>
-            <Typography color="textPrimary" variant="h3">
-              {count}
-            </Typography>
+    <>
+      <Card className={clsx(classes.root, className)} onClick={handleOpen}>
+        <CardContent>
+          <Grid container justify="space-between" spacing={3}>
+            <Grid item>
+              <Typography color="textSecondary" gutterBottom variant="h6">
+                {label}
+              </Typography>
+              <Typography color="textPrimary" variant="h3">
+                {count}
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Avatar className={classes.avatar}>{icon}</Avatar>
+            </Grid>
           </Grid>
-          <Grid item>
-            <Avatar className={classes.avatar}>{icon}</Avatar>
-          </Grid>
-        </Grid>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+      {open && (
+        <FullScreenDialog open={open} handleClose={handleClose} label={label}>
+          {children}
+        </FullScreenDialog>
+      )}
+    </>
   );
 };
 

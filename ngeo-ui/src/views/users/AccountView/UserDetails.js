@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import clsx from 'clsx';
-import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
+import { useFormik } from 'formik';
 import {
   Box,
   Button,
@@ -14,27 +14,30 @@ import {
   makeStyles
 } from '@material-ui/core';
 import { roleNames } from 'src/config';
-import capitalize from 'src/utils/capitalize';
+// import capitalize from 'src/utils/capitalize';
+import { useUpdateUser } from '../../../fetch/user';
 
 const useStyles = makeStyles(() => ({
   root: {}
 }));
 
 /* eslint-disable */
-const ProfileDetails = ({ className, profileDetails = {}, ...rest }) => {
-  const { first_name, last_name, email, staff_number, role } = profileDetails;
+const ProfileDetails = ({ className, profileDetails, ...rest }) => {
+  const {
+    first_name,
+    last_name,
+    email,
+    staff_number,
+    role,
+    uuid: userId
+  } = profileDetails;
 
+  console.log({ profileDetails });
+
+  const [error, setError] = React.useState(null);
   const classes = useStyles();
 
-  const { enqueueSnackbar } = useSnackbar();
-
-  const [values, setValues] = useState({
-    firstName: (first_name && capitalize(first_name)) || '',
-    lastName: (last_name && capitalize(last_name)) || '',
-    email: email || '',
-    staffNumber: staff_number || '',
-    role: roleNames[role] || ''
-  });
+  const updateMutation = useUpdateUser();
 
   const handleChange = (event) => {
     setValues({
@@ -43,17 +46,34 @@ const ProfileDetails = ({ className, profileDetails = {}, ...rest }) => {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    enqueueSnackbar('Profile updated!', { variant: 'success' });
+  const handleSubmit = (values, { setError }) => {
+    try {
+      console.log({ values });
+
+      updateMutation.mutate({ ...values, id: userId });
+    } catch (err) {
+      console.log({ err });
+    }
   };
+
+  const formik = useFormik({
+    initialValues: {
+      first_name: profileDetails?.first_name,
+      last_name: profileDetails?.last_name,
+      email: profileDetails?.email,
+      staff_number: profileDetails?.staff_number,
+      role: roleNames[profileDetails?.role]
+    },
+    onSubmit: handleSubmit
+  });
+
+  console.log({ fvalues: formik.values });
 
   return (
     <form
       autoComplete="off"
-      noValidate
       className={clsx(classes.root, className)}
-      onSubmit={(e) => handleSubmit(e)}
+      onSubmit={formik.handleSubmit}
       {...rest}
     >
       <Card>
@@ -66,22 +86,19 @@ const ProfileDetails = ({ className, profileDetails = {}, ...rest }) => {
                 fullWidth
                 helperText="Please specify the first name"
                 label="First name"
-                name="firstName"
-                onChange={handleChange}
-                required
-                value={values.firstName}
-                variant="outlined"
+                name="first_name"
+                onChange={formik.handleChange}
+                value={formik.values.first_name}
               />
             </Grid>
             <Grid item md={6} xs={12}>
               <TextField
                 fullWidth
                 label="Last name"
-                name="lastName"
-                onChange={handleChange}
+                name="last_name"
+                onChange={formik.handleChange}
                 required
-                value={values.lastName}
-                variant="outlined"
+                value={formik.values.last_name}
               />
             </Grid>
             <Grid item md={6} xs={12}>
@@ -89,21 +106,18 @@ const ProfileDetails = ({ className, profileDetails = {}, ...rest }) => {
                 fullWidth
                 label="Email Address"
                 name="email"
-                onChange={handleChange}
-                required
-                value={values.email}
-                variant="outlined"
+                onChange={formik.handleChange}
+                value={formik.values.email}
               />
             </Grid>
             <Grid item md={6} xs={12}>
               <TextField
                 fullWidth
                 label="Staff Number"
-                name="staffNumber"
-                onChange={handleChange}
-                required
-                value={values.staffNumber}
-                variant="outlined"
+                name="staff_number"
+                onChange={formik.handleChange}
+                value={formik.values.staff_number}
+                disabled
               />
             </Grid>
             <Grid item md={6} xs={12}>
@@ -111,10 +125,9 @@ const ProfileDetails = ({ className, profileDetails = {}, ...rest }) => {
                 fullWidth
                 label="Role"
                 name="role"
-                onChange={handleChange}
-                required
-                value={values.role}
-                variant="outlined"
+                onChange={formik.handleChange}
+                value={formik.values.role}
+                disabled
               />
             </Grid>
             {/**
@@ -147,7 +160,7 @@ const ProfileDetails = ({ className, profileDetails = {}, ...rest }) => {
         </CardContent>
         <Divider />
         <Box display="flex" justifyContent="flex-end" p={2}>
-          <Button color="primary" variant="contained" type="submit" disabled>
+          <Button color="primary" variant="contained" type="submit">
             Save details
           </Button>
         </Box>

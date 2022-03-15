@@ -7,9 +7,9 @@ import Paper from './Paper';
 
 const styles = (theme) => ({
   paper: {
-    padding: theme.spacing(4, 3),
+    padding: theme.spacing(1, 2),
     [theme.breakpoints.up('md')]: {
-      padding: theme.spacing(8, 6)
+      padding: theme.spacing(2, 4)
     }
   }
 });
@@ -19,8 +19,10 @@ function FormWrapper(props) {
 
   return (
     <Container maxWidth="sm">
-      <Box mt={7} mb={12}>
-        <Paper className={classes.paper} elevation={2}>{children}</Paper>
+      <Box mt={2} mb={3}>
+        <Paper className={classes.paper} elevation={2}>
+          {children}
+        </Paper>
       </Box>
     </Container>
   );

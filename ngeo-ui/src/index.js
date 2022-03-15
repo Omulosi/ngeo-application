@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from 'react-query';
-// import ErrorBoundary from './ErrorBoundary';
 import ErrorBoundary from 'antd/lib/alert/ErrorBoundary';
 import { DrawerProvider } from './context/drawer.context';
 
@@ -20,7 +19,15 @@ import './index.css';
 
 const { EventEmitter } = require('fbemitter');
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      staleTime: Infinity,
+      cacheTime: 0
+    }
+  }
+});
 
 // GLOBAL VARIABLES
 window.map = null; // Global map object

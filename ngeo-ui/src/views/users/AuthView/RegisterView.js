@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: '1.7',
     fontWeight: '700',
     fontFamily: 'Roboto Condensed, sans-serif',
-    fontSize: '42px',
+    fontSize: '2em',
     color: 'rgba(0,0,0,0.87)'
   },
   tagline: {

@@ -14,17 +14,6 @@ import { UnAssignProject } from 'src/redux/actions/projectActions';
 import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
-  root: {},
-  gridWrapper: {
-    height: '75vh',
-    width: 'auto'
-  },
-  grid: {
-    marginTop: theme.spacing(5)
-  },
-  progress: {
-    marginTop: '0.3em'
-  },
   dark: {
     color: '#263238',
     cursor: 'pointer',
@@ -60,8 +49,6 @@ const DisplayProjects = ({ projects = [] }) => {
   if (pathName.includes('agent')) {
     assignee = 'Agent';
   }
-
-  // debugger;
 
   /* eslint-disable */
   const rows = projects

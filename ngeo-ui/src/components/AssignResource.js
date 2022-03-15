@@ -91,6 +91,7 @@ const AssignResource = ({
                 value={value}
                 setValue={setValue}
                 groupBy={(option) => option.county}
+                disabled={disabled}
               />
             </Grid>
           </Grid>

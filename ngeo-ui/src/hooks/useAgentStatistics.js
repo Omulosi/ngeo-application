@@ -6,14 +6,15 @@ import { isRegionalManager } from 'src/utils/getRole';
 
 const useAgentStatistics = ({ agentList, role, userArea }) => {
   const [agentStatistics, setAgentStatistics] = React.useState({
-    agentCount: 0
+    // agentCount: 0,
+    agents: []
   });
 
   React.useEffect(() => {
     agentList = Array.isArray(agentList)
       ? agentList.filter((agent) => agent.attributes.is_active)
       : [];
-    let agents = agentList.filter((agent) => agent.attributes.is_active).length;
+    let agents = agentList.filter((agent) => agent.attributes.is_active);
 
     if (isRegionalManager(role)) {
       agents = agentList.filter(
@@ -21,11 +22,11 @@ const useAgentStatistics = ({ agentList, role, userArea }) => {
           agent.attributes.area &&
           agent.attributes.area.region &&
           agent.attributes.area.region === userArea
-      ).length;
+      );
     }
     setAgentStatistics((stats) => ({
       ...stats,
-      agentCount: agents
+      agents
     }));
   }, [agentList, role, userArea]);
 

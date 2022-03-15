@@ -19,6 +19,9 @@ import FolderIcon from '@material-ui/icons/FolderOpenTwoTone';
 import useUserStatistics from 'src/hooks/useUserStatistics';
 import useAgentStatistics from 'src/hooks/useAgentStatistics';
 import useProjectStatistics from 'src/hooks/useProjectStatistics';
+import UserList from '../../users/UserListView/UserList';
+import DisplayProjects from '../../../components/DisplayProjects';
+import AgentList from '../../agent/AgentList';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,36 +37,46 @@ const Dashboard = () => {
 
   const { globalData } = mainConfig;
 
-  let { data: projects } = useProjects();
   const { data: userDetail, isSuccess: userSuccess } = useUser();
+  //
+  const { data: projectData } = useProjects();
   const { data: userList } = useUserList();
   let { data: agentList } = useAgents();
+
+  const projects = projectData?.results.features;
 
   let userArea = null;
 
   let role = null;
   if (userSuccess) {
-    role = userDetail && userDetail.attributes && userDetail.attributes.role;
+    role = userDetail?.attributes?.role;
     if (isCountyManager(role)) {
-      userArea = userDetail.attributes && userDetail.attributes.area.county;
+      userArea = userDetail?.attributes?.area?.county;
     }
 
     if (isRegionalManager(role)) {
-      userArea = userDetail.attributes && userDetail.attributes.area.region;
+      userArea = userDetail?.attributes?.area?.region;
     }
   }
 
   const {
-    financeOfficerCount,
-    ceoCount,
-    hrCount,
-    regionalManagerCount,
-    countyManagerCount,
-    fieldOfficerCount,
+    // financeOfficerCount,
+    // ceoCount,
+    // hrCount,
+    // regionalManagerCount,
+    // countyManagerCount,
+    // fieldOfficerCount,
+    // userCount
+    financeOfficers,
+    ceos,
+    hrs,
+    regionalManagers,
+    countyManagers,
+    fieldOfficers,
     userCount
   } = useUserStatistics({ userList, role, userArea });
 
-  const { agentCount } = useAgentStatistics({ agentList, role, userArea });
+  const { agents } = useAgentStatistics({ agentList, role, userArea });
 
   const {
     totalProjectCount,
@@ -82,7 +95,9 @@ const Dashboard = () => {
         <Grid container spacing={3}>
           {isHR(role) && (
             <Grid item lg={3} sm={6} xl={3} xs={12}>
-              <SummaryCard label="TOTAL USERS" count={userCount} />
+              <SummaryCard label="TOTAL USERS" count={userCount}>
+                <UserList userList={userList} user={userDetail} />
+              </SummaryCard>
             </Grid>
           )}
 
@@ -90,8 +105,10 @@ const Dashboard = () => {
             <Grid item lg={3} sm={6} xl={3} xs={12}>
               <SummaryCard
                 label={`${globalData.siteNames.CEO.name.toUpperCase()}`}
-                count={ceoCount}
-              />
+                count={ceos?.length}
+              >
+                <UserList userList={ceos} user={userDetail} />
+              </SummaryCard>
             </Grid>
           )}
 
@@ -99,8 +116,11 @@ const Dashboard = () => {
             <Grid item lg={3} sm={6} xl={3} xs={12}>
               <SummaryCard
                 label={`${globalData.siteNames.HR.name.toUpperCase()}`}
-                count={hrCount}
-              />
+                count={hrs?.length}
+              >
+                {' '}
+                <UserList userList={hrs} user={userDetail} />
+              </SummaryCard>
             </Grid>
           )}
 
@@ -108,8 +128,11 @@ const Dashboard = () => {
             <Grid item lg={3} sm={6} xl={3} xs={12}>
               <SummaryCard
                 label={`${globalData.siteNames.Finance.name.toUpperCase()}`}
-                count={financeOfficerCount}
-              />
+                count={financeOfficers?.length}
+              >
+                {' '}
+                <UserList userList={financeOfficers} user={userDetail} />
+              </SummaryCard>
             </Grid>
           )}
 
@@ -120,8 +143,10 @@ const Dashboard = () => {
               <Grid item lg={3} sm={6} xl={3} xs={12}>
                 <SummaryCard
                   label={`${globalData.siteNames.RM.name.toUpperCase()}(S)`}
-                  count={regionalManagerCount}
-                />
+                  count={regionalManagers?.length}
+                >
+                  <UserList userList={regionalManagers} user={userDetail} />
+                </SummaryCard>
               </Grid>
             )}
 
@@ -129,8 +154,10 @@ const Dashboard = () => {
             <Grid item lg={3} sm={6} xl={3} xs={12}>
               <SummaryCard
                 label={`${globalData.siteNames.CM.name.toUpperCase()}(S)`}
-                count={countyManagerCount}
-              />
+                count={countyManagers?.length}
+              >
+                <UserList userList={countyManagers} user={userDetail} />
+              </SummaryCard>
             </Grid>
           )}
 
@@ -138,8 +165,10 @@ const Dashboard = () => {
             <Grid item lg={3} sm={6} xl={3} xs={12}>
               <SummaryCard
                 label={`${globalData.siteNames.FOO.name.toUpperCase()}(S)`}
-                count={fieldOfficerCount}
-              />
+                count={fieldOfficers.length}
+              >
+                <UserList userList={fieldOfficers} user={userDetail} />
+              </SummaryCard>
             </Grid>
           )}
 
@@ -147,8 +176,10 @@ const Dashboard = () => {
             <Grid item lg={3} sm={6} xl={3} xs={12}>
               <SummaryCard
                 label={`${globalData.siteNames.Agent?.name.toUpperCase()}(S)`}
-                count={agentCount}
-              />
+                count={agents?.length}
+              >
+                <AgentList agents={agents} user={userDetail} />
+              </SummaryCard>
             </Grid>
           )}
 
@@ -158,7 +189,9 @@ const Dashboard = () => {
                 label={`${globalData.siteNames.Project?.name.toUpperCase()}(S)`}
                 count={totalProjectCount || userProjectCount}
                 icon={<FolderIcon />}
-              />
+              >
+                <DisplayProjects projects={projects} />
+              </SummaryCard>
             </Grid>
           )}
 
@@ -166,8 +199,10 @@ const Dashboard = () => {
             <Grid item lg={3} sm={6} xl={3} xs={12}>
               <SummaryCard
                 label={`${globalData.siteNames.Project.name.toUpperCase()}(S) WITH ${globalData.siteNames.Agent.name.toUpperCase()}(S) `}
-                count={projectsWithAgents}
-              />
+                count={projectsWithAgents?.length}
+              >
+                <DisplayProjects projects={projectsWithAgents} />
+              </SummaryCard>
             </Grid>
           )}
 
@@ -175,8 +210,10 @@ const Dashboard = () => {
             <Grid item lg={3} sm={6} xl={3} xs={12}>
               <SummaryCard
                 label={`${globalData.siteNames.Project.name.toUpperCase()}(S) WITH NO ${globalData.siteNames.Agent.name.toUpperCase()}(S) `}
-                count={projectsWithoutAgents}
-              />
+                count={projectsWithoutAgents?.length}
+              >
+                <DisplayProjects projects={projectsWithoutAgents} />
+              </SummaryCard>
             </Grid>
           )}
 
@@ -186,8 +223,10 @@ const Dashboard = () => {
             <Grid item lg={3} sm={6} xl={3} xs={12}>
               <SummaryCard
                 label={`${globalData.siteNames.Project.name.toUpperCase()}(S) WITH ${globalData.siteNames.Agent.name.toUpperCase()}(S) - ${globalData.siteNames.Permanent.name.toUpperCase()}`}
-                count={projectsWithAgentsPermanent}
-              />
+                count={projectsWithAgentsPermanent?.length}
+              >
+                <DisplayProjects projects={projectsWithAgentsPermanent} />
+              </SummaryCard>
             </Grid>
           )}
 
@@ -195,8 +234,10 @@ const Dashboard = () => {
             <Grid item lg={3} sm={6} xl={3} xs={12}>
               <SummaryCard
                 label={`${globalData.siteNames.Project.name.toUpperCase()}(S) WITH ${globalData.siteNames.Agent.name.toUpperCase()}(S) - ${globalData.siteNames.Contract.name.toUpperCase()}`}
-                count={projectsWithAgentsContract}
-              />
+                count={projectsWithAgentsContract?.length}
+              >
+                <DisplayProjects projects={projectsWithAgentsContract} />
+              </SummaryCard>
             </Grid>
           )}
 
@@ -204,8 +245,10 @@ const Dashboard = () => {
             <Grid item lg={3} sm={6} xl={3} xs={12}>
               <SummaryCard
                 label={`${globalData.siteNames.Project.name.toUpperCase()}(S) - HQ Controlled`}
-                count={projectsHqControlled}
-              />
+                count={projectsHqControlled?.length}
+              >
+                <DisplayProjects projects={projectsHqControlled} />
+              </SummaryCard>
             </Grid>
           )}
 
@@ -213,8 +256,10 @@ const Dashboard = () => {
             <Grid item lg={3} sm={6} xl={3} xs={12}>
               <SummaryCard
                 label={`${globalData.siteNames.Project.name.toUpperCase()}(S) - COUNTY Controlled`}
-                count={projectsCountyControlled}
-              />
+                count={projectsCountyControlled?.length}
+              >
+                <DisplayProjects projects={projectsCountyControlled} />
+              </SummaryCard>
             </Grid>
           )}
         </Grid>

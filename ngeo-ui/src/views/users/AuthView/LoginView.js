@@ -23,12 +23,13 @@ import mainConfig from 'src/config/config.json';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: '100vh',
+    height: '100%',
+    maxHeight: '100vh',
     paddingBottom: theme.spacing(1),
     paddingTop: theme.spacing(3)
   },
   paper: {
-    padding: theme.spacing(4, 3),
+    padding: theme.spacing(1, 2),
     [theme.breakpoints.up('md')]: {
       padding: theme.spacing(8, 6)
     }
@@ -39,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: '1.7',
     fontWeight: '700',
     fontFamily: 'Roboto Condensed, sans-serif',
-    fontSize: '42px',
+    fontSize: '2em',
     color: 'rgba(0,0,0,0.87)'
   },
   tagline: {
@@ -122,7 +123,7 @@ const LoginView = () => {
         <Container maxWidth="sm">
           <>
             <Typography
-              variant="h2"
+              variant="h3"
               gutterBottom
               marked="center"
               align="center"
@@ -155,7 +156,6 @@ const LoginView = () => {
               onChange={formik.handleChange}
               type="email"
               value={formik.values.email}
-              size="large"
               required
             />
             <RFTextField
@@ -170,7 +170,6 @@ const LoginView = () => {
               type="password"
               value={formik.values.password}
               className={classes.field}
-              size="large"
               required
             />
             <Box my={2}>

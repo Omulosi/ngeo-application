@@ -12,41 +12,41 @@ import {
 
 const useUserStatistics = ({ userList, role, userArea }) => {
   const [userStatistics, setUserStatistics] = React.useState({
-    financeOfficerCount: 0,
-    ceoCount: 0,
-    hrCount: 0,
-    regionalManagerCount: 0,
-    countyManagerCount: 0,
-    fieldOfficerCount: 0,
-    userCount: 0
+    //
+    financeOfficers: [],
+    ceos: [],
+    hrs: [],
+    regionalManagers: [],
+    countyManagers: [],
+    fieldOfficers: [],
+    userCount: []
   });
   // Ignore admin and current user (HR)
 
   React.useEffect(() => {
-    const users = Array.isArray(userList) ? userList.length - 2 : 0;
+    const userCount = Array.isArray(userList) ? userList?.length - 2 : 0;
     const financeOfficers = Array.isArray(userList)
-      ? userList.filter((user) => isFinance(user.attributes.role)).length
-      : 0;
+      ? userList.filter((user) => isFinance(user.attributes.role))
+      : [];
     const ceos = Array.isArray(userList)
-      ? userList.filter((user) => isCEO(user.attributes.role)).length
-      : 0;
+      ? userList.filter((user) => isCEO(user.attributes.role))
+      : [];
 
     const hrs = Array.isArray(userList)
-      ? userList.filter((user) => isHR(user.attributes.role)).length
-      : 0;
+      ? userList.filter((user) => isHR(user.attributes.role))
+      : [];
 
     const regionalManagers = Array.isArray(userList)
       ? userList.filter((user) => isRegionalManager(user.attributes.role))
-          .length
-      : 0;
+      : [];
 
     let countyManagers = Array.isArray(userList)
-      ? userList.filter((user) => isCountyManager(user.attributes.role)).length
-      : 0;
+      ? userList.filter((user) => isCountyManager(user?.attributes?.role))
+      : [];
 
     let fieldOfficers = Array.isArray(userList)
-      ? userList.filter((user) => isFieldOfficer(user.attributes.role)).length
-      : 0;
+      ? userList.filter((user) => isFieldOfficer(user.attributes.role))
+      : [];
 
     if (isRegionalManager(role)) {
       // debugger;
@@ -54,11 +54,9 @@ const useUserStatistics = ({ userList, role, userArea }) => {
         ? userList.filter(
             (user) =>
               isCountyManager(user.attributes.role) &&
-              user.attributes.area &&
-              user.attributes.area.region &&
-              user.attributes.area.region === userArea
-          ).length
-        : 0;
+              user?.attributes?.area?.region === userArea
+          )
+        : [];
 
       fieldOfficers = Array.isArray(userList)
         ? userList.filter(
@@ -67,8 +65,8 @@ const useUserStatistics = ({ userList, role, userArea }) => {
               user.attributes.area &&
               user.attributes.area.region &&
               user.attributes.area.region === userArea
-          ).length
-        : 0;
+          )
+        : [];
     }
 
     if (isCountyManager(role)) {
@@ -76,32 +74,28 @@ const useUserStatistics = ({ userList, role, userArea }) => {
         ? userList.filter(
             (user) =>
               isCountyManager(user.attributes.role) &&
-              user.attributes.area &&
-              user.attributes.area.county &&
-              user.attributes.area.county === userArea
-          ).length
-        : 0;
+              user?.attributes?.area?.county === userArea
+          )
+        : [];
 
       fieldOfficers = Array.isArray(userList)
         ? userList.filter(
             (user) =>
               isFieldOfficer(user.attributes.role) &&
-              user.attributes.area &&
-              user.attributes.area.county &&
-              user.attributes.area.county === userArea
-          ).length
-        : 0;
+              user?.attributes?.area?.county === userArea
+          )
+        : [];
     }
 
     setUserStatistics((stats) => ({
       ...stats,
-      financeOfficerCount: financeOfficers,
-      ceoCount: ceos,
-      hrCount: hrs,
-      regionalManagerCount: regionalManagers,
-      countyManagerCount: countyManagers,
-      fieldOfficerCount: fieldOfficers,
-      userCount: users
+      financeOfficers,
+      ceos,
+      hrs,
+      regionalManagers,
+      countyManagers,
+      fieldOfficers,
+      userCount
     }));
   }, [userList, role, userArea]);
 

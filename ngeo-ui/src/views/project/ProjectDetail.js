@@ -1,12 +1,9 @@
 import React from 'react';
-/* eslint-disable */
 import { makeStyles, Container, Grid } from '@material-ui/core';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { Edit } from 'react-feather';
-import moment from 'moment';
 import { useActivateProject, useProject } from 'src/fetch/projects';
-import DetailsDisplay from 'src/components/DetailsDisplay';
 import Page from 'src/components/Page';
 import DataGridToolbar from 'src/components/DataGridToolbar';
 import ProjectInfo from 'src/components/ProjectInfo';
@@ -14,8 +11,8 @@ import capitalize from 'src/utils/capitalize';
 import { useFinance } from 'src/fetch/permissions';
 import AssignArea from 'src/components/AssignArea';
 import ActivateResource from 'src/components/ActivateResource';
-import DeleteProject from './DeleteProject';
 import mainConfig from 'src/config/config.json';
+import DeleteProject from './DeleteProject';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,6 +49,10 @@ const ProjectDetails = () => {
   const classes = useStyles();
   const { id } = useParams();
 
+  const state = useLocation();
+
+  console.log({ state });
+
   const { siteNames } = mainConfig.globalData;
 
   const { enqueueSnackbar } = useSnackbar();
@@ -59,7 +60,7 @@ const ProjectDetails = () => {
 
   const isFinance = useFinance();
 
-  const { data, isLoading, error, isSuccess } = useProject(id);
+  const { data, error, isSuccess } = useProject(id);
 
   if (error) {
     console.log(`Error => ${error}`);

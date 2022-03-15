@@ -8,7 +8,10 @@ const useStyles = makeStyles((theme) => ({
     left: 0,
     bottom: 0,
     width: '100%',
-    zIndex: 999
+    zIndex: 999,
+    '&:hover': {
+      backgroundColor: 'rgba(0,0,0,.6)'
+    }
   },
   content: {
     display: 'flex',
@@ -16,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     letterSpacing: '.3px',
     alignItems: 'center',
     color: '#e8eaed',
-    backgroundColor: 'rgba(0,0,0,.6)',
+    backgroundColor: 'rgba(0,0,0,0.4)',
     height: '32px',
     padding: '0 15px',
     justifyContent: 'center',

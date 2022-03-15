@@ -124,16 +124,19 @@ const UserProfile = () => {
               </Grid>
             )}
 
-            <Grid item xl={6} lg={6} md={6} xs={12}>
-              <ActivateUser resourceUrl={`/users/${details.id}`} />
-            </Grid>
-            <Grid item xl={6} lg={6} md={6} xs={12}>
-              <DeactivateUser
-                resourceUrl={`/users/${details.id}`}
-                title="Deactivate User"
-                btnTitle="Deactivate User"
-              />
-            </Grid>
+            {details?.is_active ? (
+              <Grid item xl={6} lg={6} md={6} xs={12}>
+                <DeactivateUser
+                  resourceUrl={`/users/${details.id}`}
+                  title="Permissions"
+                  btnTitle="Deactivate User"
+                />
+              </Grid>
+            ) : (
+              <Grid item xl={6} lg={6} md={6} xs={12}>
+                <ActivateUser resourceUrl={`/users/${details.id}`} />
+              </Grid>
+            )}
           </Grid>
         </TabPanel>
       </Container>

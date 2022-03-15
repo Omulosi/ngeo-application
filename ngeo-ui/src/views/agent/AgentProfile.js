@@ -134,6 +134,8 @@ const AgentProfile = () => {
   const displayAssignFOO =
     agentDetails.terms !== 3 || !agentDetails.field_officer?.user.is_active;
 
+  console.log({ state });
+
   return (
     <Page title={`${siteNames.Agent.name} Profile`} className={classes.root}>
       <div className={classes.progress}>{loading && <LineProgress />}</div>
