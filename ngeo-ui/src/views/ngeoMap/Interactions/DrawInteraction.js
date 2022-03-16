@@ -40,6 +40,7 @@ const DrawInteraction = ({ type, setType }) => {
       if (type === 'Arrow') {
         type = 'LineString';
       }
+
       window.isDrawingOrEditing = true;
       draw = new Draw({
         source: source,
@@ -82,7 +83,7 @@ const DrawInteraction = ({ type, setType }) => {
             );
           }
 
-          // Open dialog for adding extra details to the point marker
+          // Open dialog for adding extra details to the custom marker
           // Dialog listener: src/views/ngeoMap/index.js
           window.emitter.emit('addMarker', newFeature, coordinatesArray, type);
         }, 1000);

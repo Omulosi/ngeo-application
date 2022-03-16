@@ -1,5 +1,15 @@
+/* eslint-disable no-duplicate-case */
+/* eslint-disable no-case-declarations */
+/* eslint-disable react/jsx-boolean-value */
+/* eslint-disable prefer-destructuring */
+/* eslint-disable operator-assignment */
+/* eslint-disable operator-linebreak */
+/* eslint-disable react/jsx-wrap-multilines */
+/* eslint-disable no-shadow */
+/* eslint-disable react/button-has-type */
+/* eslint-disable react/prop-types */
+/* eslint-disable object-curly-newline */
 import React, { useState } from 'react';
-/* eslint-disable */
 import clsx from 'clsx';
 import { makeStyles, List, Divider, Tooltip } from '@material-ui/core';
 import createGetFeatureQuery, {
@@ -7,7 +17,38 @@ import createGetFeatureQuery, {
 } from 'src/utils/queries';
 import useUser from 'src/fetch/user';
 import { roles } from 'src/config';
+import * as helpers from 'src/utils/helpers';
+import { useThemes } from 'src/fetch/themes';
+// import Loading from 'src/components/Loading';
+import {
+  isFinance as isFinanceOfficer,
+  isCountyManager,
+  isFieldOfficer,
+  isCEO as isUserCEO,
+  isRegionalManager
+} from 'src/utils/getRole';
+
+import {
+  BOUNDARY_ZINDEX_OFFSET,
+  INSTALLATIONS_ZINDEX_OFFSET,
+  MYDATA_ZINDEX_OFFSET
+} from 'src/constants';
+
 import { vectorGeoJson, vectorSourceWMS, vectorSourceImageWMS } from './Source';
+import AccordionItem from './AccordionItem';
+import ListItem from './LayerListItem';
+// icons
+// import { icons } from './geoStyles';
+
+// image icons
+import pointIcon from './images/point.png';
+import arrowIcon from './images/arrow.png';
+import polygonIcon from './images/polygon.png';
+import polyLineIcon from './images/polyline.png';
+import noneIcon from './images/none.png';
+
+// Load layers to map
+import { Layers, VectorLayer, TileLayer, ImageLayer } from './Layers';
 // Map Controls
 import {
   Controls,
@@ -20,33 +61,9 @@ import {
   DrawInteraction,
   MeasureInteraction
 } from './Interactions';
-import SideDrawer from './SideDrawer';
+import SideDrawer from './SideDrawerWrapper';
 import Navigation from './Navigation/Navigation';
-import styles from './geoStyles';
-import * as helpers from 'src/utils/helpers';
-import AccordionItem from './AccordionItem';
-import ListItem from './LayerListItem';
-import { Layers, VectorLayer, TileLayer, ImageLayer } from './Layers';
-import pointIcon from './images/point.png';
-import arrowIcon from './images/arrow.png';
-import polygonIcon from './images/polygon.png';
-import polyLineIcon from './images/polyline.png';
-import noneIcon from './images/none.png';
-import { useThemes } from 'src/fetch/themes';
-import Loading from 'src/components/Loading';
-import {
-  isFinance as isFinanceOfficer,
-  isCountyManager,
-  isFieldOfficer,
-  isCEO as isUserCEO,
-  isRegionalManager
-} from 'src/utils/getRole';
-import { icons } from './geoStyles';
-import {
-  BOUNDARY_ZINDEX_OFFSET,
-  INSTALLATIONS_ZINDEX_OFFSET,
-  MYDATA_ZINDEX_OFFSET
-} from 'src/constants';
+import styles, { icons } from './geoStyles';
 
 const useStyles = makeStyles({
   map: {
@@ -364,7 +381,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
         setShowThreat(!showThreat);
         break;
       case 'projects_project':
-        let toggleProject = !showProject;
+        const toggleProject = !showProject;
         setShowProject(!showProject);
         // Event handled in src/views/ngeoMap/Controls/SelectControl module
         window.emitter.emit('onToggleProjects', toggleProject);
@@ -397,12 +414,12 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
   };
 
   // Get currently logged in user
-  const { data: user, isSuccess: userSuccess } = useUser();
+  const { data: user } = useUser();
 
   // Load themes - display their color icons in RHS sidebar
-  const { data: themeData, isSuccess: themeSuccess } = useThemes();
+  const { data: themeData } = useThemes();
 
-  let themes =
+  const themes =
     themeData?.map((theme) => ({
       id: theme.id,
       name: theme.attributes.name,
@@ -447,7 +464,6 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
           style={styles.userAreaFunction}
           zIndex={MYDATA_ZINDEX_OFFSET * 1.5}
           type="area"
-          //areaType={userAreaObject.type}
           isUserArea={true}
           name="jurisdictionLayer"
         />
@@ -461,10 +477,11 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
       return;
     }
 
-    let userAreaObject = { name: '', type: '', url: '' };
+    // Object representing user area
+    const userAreaObject = { name: '', type: '', url: '' };
 
     layers.forEach((layer) => {
-      let groupTitle = layer.layerGroup.title;
+      const groupTitle = layer.layerGroup.title;
 
       // List of layers in this group
       let groupLayers = layer.layerGroup.publishables.published;
@@ -482,7 +499,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
         // Global container for admin checkbox items to control visibility of corresponding layers
         const adminBoundaryItems = [];
         // Global container to hold all layers in this group
-        let adminLayers = [];
+        const adminLayers = [];
 
         // Create layers and their corresponding control item and update above
         // containers.
@@ -496,16 +513,15 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
           let extentCRS = null;
           let maxZoom = null;
           let minZoom = null;
-          let style = null;
+          const style = null;
           let visible = isFinance || isCEO || !isAuthenticated;
           let isVisible = false;
           let zIndex = 0;
           let userArea = null;
-          let isUserArea = false;
           let adminLayer = null;
           let url = null;
           // params for WMS Image layers
-          let params = {
+          const params = {
             LAYERS: layerName,
             Tiled: false
           };
@@ -625,11 +641,11 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
           // get user's areas and update visibility variable
           if (isAuthenticated) {
             // Get user Area description
-            if (userData.role && userData.role == roles.RM) {
+            if (userData.role && userData.role === roles.RM) {
               if (layerName.toLocaleLowerCase().includes('ke_region')) {
                 userArea = userData.area.region;
                 userArea = userArea && userArea.toLocaleLowerCase();
-                let areaFilter = `strToLowerCase (REGION) like '${userArea}'`;
+                const areaFilter = `strToLowerCase (REGION) like '${userArea}'`;
                 url = createFilterFeatureQuery(layerName, areaFilter);
 
                 // Update global user area object
@@ -641,7 +657,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               }
             }
 
-            if (userData?.role == roles.CM) {
+            if (userData?.role === roles.CM) {
               // Execute only only when layer name is county
               if (layerName.toLocaleLowerCase().includes('ke_county')) {
                 userArea = userData.area?.county;
@@ -652,7 +668,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                   userArea = 'Nairobi';
                 }
                 userArea = userArea && userArea.toLocaleLowerCase();
-                let areaFilter = `strToLowerCase (COUNTY) like '${userArea}'`;
+                const areaFilter = `strToLowerCase (COUNTY) like '${userArea}'`;
                 url = createFilterFeatureQuery(layerName, areaFilter);
 
                 // Update user area object
@@ -666,13 +682,13 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               }
             }
 
-            if (userData?.role == roles.FOO) {
+            if (userData?.role === roles.FOO) {
               let county = userData.area?.county;
-              let constituency = userData.area?.constituency;
-              let subCounty = userData.area?.sub_county;
-              let division = userData.area?.division;
-              let location = userData.area?.location;
-              let subLocation = userData.area?.sub_location;
+              const constituency = userData.area?.constituency;
+              const subCounty = userData.area?.sub_county;
+              const division = userData.area?.division;
+              const location = userData.area?.location;
+              const subLocation = userData.area?.sub_location;
 
               // Nairobi region only has Nairobi County
               if (
@@ -697,7 +713,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                 ) {
                   userArea = county;
                   userArea = userArea && userArea.toLocaleLowerCase();
-                  let areaFilter = `strToLowerCase (COUNTY) like '${userArea}'`;
+                  const areaFilter = `strToLowerCase (COUNTY) like '${userArea}'`;
                   url = createFilterFeatureQuery(layerName, areaFilter);
                   userAreaObject.type = 'COUNTY';
                   userAreaObject.name = userArea;
@@ -714,7 +730,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               ) {
                 userArea = constituency[0];
                 userArea = userArea && userArea.toLocaleLowerCase();
-                let areaFilter = `strToLowerCase (CONSTITUEN) like '${userArea}'`;
+                const areaFilter = `strToLowerCase (CONSTITUEN) like '${userArea}'`;
                 url = createFilterFeatureQuery(layerName, areaFilter);
                 userAreaObject.type = 'CONSTITUEN';
                 userAreaObject.name = userArea;
@@ -730,7 +746,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               ) {
                 userArea = subCounty[0];
                 userArea = userArea && userArea.toLocaleLowerCase();
-                let areaFilter = `strToLowerCase (SUB_COUN) like '${userArea}'`;
+                const areaFilter = `strToLowerCase (SUB_COUN) like '${userArea}'`;
                 url = createFilterFeatureQuery(layerName, areaFilter);
                 userAreaObject.type = 'SUB_COUN';
                 userAreaObject.name = userArea;
@@ -746,7 +762,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               ) {
                 userArea = division[0];
                 userArea = userArea && userArea.toLocaleLowerCase();
-                let areaFilter = `strToLowerCase (DIVISION) like '${userArea}'`;
+                const areaFilter = `strToLowerCase (DIVISION) like '${userArea}'`;
                 url = createFilterFeatureQuery(layerName, areaFilter);
 
                 userAreaObject.type = 'DIVISION';
@@ -763,7 +779,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               ) {
                 userArea = location[0];
                 userArea = userArea && userArea.toLocaleLowerCase();
-                let areaFilter = `strToLowerCase (LOCATION) like '${userArea}'`;
+                const areaFilter = `strToLowerCase (LOCATION) like '${userArea}'`;
 
                 url = createFilterFeatureQuery(layerName, areaFilter);
                 userAreaObject.type = 'LOCATION';
@@ -780,7 +796,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               ) {
                 userArea = subLocation[0];
                 userArea = userArea && userArea.toLocaleLowerCase();
-                let areaFilter = `strToLowerCase (SUB_LOCATI) like '${userArea}'`;
+                const areaFilter = `strToLowerCase (SUB_LOCATI) like '${userArea}'`;
                 url = createFilterFeatureQuery(layerName, areaFilter);
 
                 userAreaObject.type = 'SUB_LOCATI';
@@ -837,8 +853,8 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
 
       if (groupTitle.toLocaleLowerCase().includes('installations')) {
         /* ================================ Installations ====================================== */
-        let installationItems = [];
-        let installationLayers = [];
+        const installationItems = [];
+        const installationLayers = [];
 
         let zIndex = INSTALLATIONS_ZINDEX_OFFSET;
 
@@ -850,7 +866,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
           let url = createGetFeatureQuery(layerName);
           // url for area specific features
           if (userAreaObject.name) {
-            let areaName = userAreaObject.name.substring(0, 6);
+            const areaName = userAreaObject.name.substring(0, 6);
             let areaType = `${userAreaObject.type}_1`;
             if (
               userAreaObject.type.toLocaleLowerCase().includes('sub_') ||
@@ -872,9 +888,8 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
           let extentCRS = null;
           let style = null;
           let minZoom = null;
-          let maxZoom = null;
-          let minResolution = null;
-          let maxResolution = null;
+          const minResolution = null;
+          const maxResolution = null;
           let visible = false;
           let isVisible = false;
           let hide = false;
@@ -1116,7 +1131,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
             const opacity = layerName.toLocaleLowerCase().includes('road')
               ? 0.5
               : null;
-            let params = {
+            const params = {
               LAYERS: layerName,
               Tiled: true
             };
@@ -1127,8 +1142,8 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
             //   params.CQL_FILTER = filterString;
             // }
 
-            if (userAreaObject.name) {
-              let areaName = userAreaObject.name.substring(0, 6);
+            if (userAreaObject?.name) {
+              const areaName = userAreaObject.name.substring(0, 6);
               let areaType = `${userAreaObject.type}_1`;
               if (
                 userAreaObject.type.toLocaleLowerCase().includes('sub_') ||
@@ -1136,7 +1151,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               ) {
                 areaType = userAreaObject.type;
               }
-              let filterString = `strToLowerCase (${areaType}) like '${areaName}%'`;
+              const filterString = `strToLowerCase (${areaType}) like '${areaName}%'`;
               params.CQL_FILTER = filterString;
             }
 
@@ -1200,7 +1215,13 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                       display: 'inline-box'
                     }}
                   >
-                    {iconSrc && <img src={iconSrc} style={{ width: '100%' }} />}
+                    {iconSrc && (
+                      <img
+                        src={iconSrc}
+                        alt="check box icon"
+                        style={{ width: '100%' }}
+                      />
+                    )}
                   </div>
                 }
               >
@@ -1231,10 +1252,9 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
 
       if (groupTitle.toLocaleLowerCase().includes('my data')) {
         /* ================================ Installations ====================================== */
-        let myDataItems = [];
-        let myDataLayers = [];
+        const myDataItems = [];
+        const myDataLayers = [];
 
-        let isJurisdictionVisible = showJurisdiction;
         let jurisdictionURL = '';
         if (userAreaObject.name) {
           jurisdictionURL = userAreaObject.url;
@@ -1260,10 +1280,10 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
           let minZoom = null;
           let maxZoom = null;
           let zIndex = 0;
-          let hide = !Boolean(userAreaObject.name);
+          let hide = !userAreaObject?.name;
 
           // params for WMS Image layers
-          let params = {
+          const params = {
             LAYERS: layerName,
             Tiled: false
           };
@@ -1286,33 +1306,46 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               isVisible = showThreat;
               style = styles.arrowStyleFunction;
               minZoom = 8;
+              title = 'Threats';
               if (isVisible) {
                 minZoom = null;
               }
-              // filter by destination county if user area is county
-              if (userAreaObject.county) {
+
+              // filter by rm's region
+              if (isRegionalManager(userData?.role)) {
                 url = createFilterFeatureQuery(
                   layerName,
-                  `strToLowerCase (destination) like '${userAreaObject.county}' or strToLowerCase (origin) like '${userAreaObject.county}'`
+                  `strToLowerCase (to_region) like '${userAreaObject?.name}' or strToLowerCase (from_region) like '${userAreaObject?.name}'`
                 );
               }
 
-              //
-              if (userAreaObject.type === 'REGION') {
+              // filter by cm's county
+              if (isCountyManager(userData?.role)) {
                 url = createFilterFeatureQuery(
                   layerName,
-                  `strToLowerCase (to_region) like '${userAreaObject.name}' or strToLowerCase (from_region) like '${userAreaObject.name}'`
+                  `strToLowerCase (destination) like '${userAreaObject?.name}' or strToLowerCase (origin) like '${userAreaObject?.name}'`
                 );
               }
+
+              // filter by foo's county
+              if (isFieldOfficer(userData?.role)) {
+                url = createFilterFeatureQuery(
+                  layerName,
+                  `strToLowerCase (destination) like '${userAreaObject?.county}' or strToLowerCase (origin) like '${userAreaObject?.county}'`
+                );
+              }
+
               break;
             case 'projects_project':
               isVisible = showProject;
-            // projectSource = new VectorSource();
+              title = 'Projects';
+              // projectSource = new VectorSource();
 
-            /**
-             * User Specific boundary
-             */
-            // layers whose visibility can be manually set
+              /**
+               * User Specific boundary
+               */
+              // layers whose visibility can be manually set
+              break;
             case 'ke_region':
               zIndex = BOUNDARY_ZINDEX_OFFSET + groupLayers.length;
               minZoom = 0;
@@ -1412,7 +1445,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
 
           if (isAuthenticated) {
             if (userAreaObject.name) {
-              let areaName = userAreaObject.name.substring(0, 6);
+              const areaName = userAreaObject.name.substring(0, 6);
               let areaType = `${userAreaObject.type}_1`;
               if (
                 userAreaObject.type.toLocaleLowerCase().includes('sub_') ||
@@ -1420,7 +1453,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               ) {
                 areaType = userAreaObject.type;
               }
-              let filterString = `strToLowerCase (${areaType}) like '${areaName}%'`;
+              const filterString = `strToLowerCase (${areaType}) like '${areaName}%'`;
               // For getting layers specific to this user's area
               params.CQL_FILTER = filterString;
             }
@@ -1535,8 +1568,8 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
           myDataItems.push(myDataItem);
         });
 
-        let jurisdictionLayerControl = (
-          <ListItem name={'Jurisdiction Area'} key={helpers.getUID()}>
+        const jurisdictionLayerControl = (
+          <ListItem name="Jurisdiction Area" key={helpers.getUID()}>
             <input
               type="checkbox"
               checked={showJurisdiction}
@@ -1551,8 +1584,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
           myDataItems.push(jurisdictionLayerControl);
         }
 
-        // ================================= End of Jurisdiction Area ===================================
-        console.log({ myDataLayers });
+        // ===== End of Jurisdiction Area =====
 
         const myDataLayerItems = (
           <AccordionItem title={groupTitle}>{myDataItems}</AccordionItem>
@@ -1616,12 +1648,14 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
     showUserSubLocation
   ]);
 
+  // Content to populate RHS side drawer on map
   const drawerContent = [
     ...adminBoundaryContent,
     ...installationContent,
     ...myDataContent
   ];
 
+  // Layers to be displayed on map
   const mapLayers = [
     ...adminLayers,
     ...installationLayers,
@@ -1632,19 +1666,24 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
   return (
     <div className={classes.container} id="map-theme">
       <div id="control-items" style={{ position: 'absolute' }}>
-        {/** Map Controls */}
+        {/** Map Controls. Check the <Controls></Controls> wrapper */}
         <Controls>{controls}</Controls>
+        {/** zoom, zoom to user area , search. */}
         <Navigation />
       </div>
 
-      {/** Map Layers -  not shown on UI, layers get added to global 'map' object when this component mounts */}
+      {/** Map Layers -  not shown on UI, layers get added to global 'map'
+        object when this component mounts Logic in <layers></layers> wrapper
+        */}
       <Layers>{mapLayers}</Layers>
 
-      {/** Map Interactions -  interactions get added to global 'map' object when this component mounts */}
+      {/** Map Interactions -  interactions get added to global 'map'
+      object when this component mounts
+      */}
       <Interactions>{interactions}</Interactions>
 
       <SideDrawer>
-        {/** Layers Section */}
+        {/** Layers Section - components for controling layer visibility  */}
         {isAuthenticated && (
           <List>
             <AccordionItem title="Layers">
@@ -1657,7 +1696,9 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
           </List>
         )}
 
-        {/** Threats Section */}
+        {/** Threats Section - components for adding threats.
+          Only a county manager can add threats.
+        */}
         {isAuthenticated && isCountyManager(userData.role) && (
           <AccordionItem title="Threats">
             <Divider
@@ -1672,7 +1713,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                     <div
                       className={clsx(
                         classes.buttonContainer,
-                        activeButton == 'arrow' ? classes.buttonActive : null
+                        activeButton === 'arrow' ? classes.buttonActive : null
                       )}
                     >
                       <button
@@ -1682,7 +1723,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                           setActiveButton('arrow');
                         }}
                       >
-                        <img src={arrowIcon} />
+                        <img src={arrowIcon} alt="arrow icon" />
                       </button>
                     </div>
                   </Tooltip>
@@ -1692,7 +1733,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                     <div
                       className={clsx(
                         classes.buttonContainer,
-                        activeButton == 'none' ? classes.buttonActive : null
+                        activeButton === 'none' ? classes.buttonActive : null
                       )}
                     >
                       <button
@@ -1702,7 +1743,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                           setActiveButton('none');
                         }}
                       >
-                        <img src={noneIcon} />
+                        <img src={noneIcon} alt="cancel icon" />
                       </button>
                     </div>
                   </Tooltip>
@@ -1712,7 +1753,9 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
           </AccordionItem>
         )}
 
-        {/** Projects Section */}
+        {/** Projects Section - components for adding projects.
+          only a finance officer can add projects
+        */}
         {isAuthenticated && isFinanceOfficer(userData.role) && (
           <AccordionItem title="Projects">
             <Divider
@@ -1724,32 +1767,31 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                 <div className={classes.buttonBar}>
                   {/** Point */}
 
-                  {userData.role == roles.Finance && (
-                    <Tooltip title="Add Feature" placement="right">
-                      <div
-                        className={clsx(
-                          classes.buttonContainer,
-                          activeButton == 'point' ? classes.buttonActive : null
-                        )}
+                  <Tooltip title="Add Project" placement="right">
+                    <div
+                      className={clsx(
+                        classes.buttonContainer,
+                        activeButton === 'point' ? classes.buttonActive : null
+                      )}
+                    >
+                      <button
+                        className={classes.button}
+                        onClick={() => {
+                          setDrawType('Point');
+                          setActiveButton('point');
+                        }}
                       >
-                        <button
-                          className={classes.button}
-                          onClick={() => {
-                            setDrawType('Point');
-                            setActiveButton('point');
-                          }}
-                        >
-                          <img src={pointIcon} />
-                        </button>
-                      </div>
-                    </Tooltip>
-                  )}
+                        <img src={pointIcon} alt="Point icon" />
+                      </button>
+                    </div>
+                  </Tooltip>
+
                   {/** Cancel draw */}
                   <Tooltip title="Cancel draw" placement="right">
                     <div
                       className={clsx(
                         classes.buttonContainer,
-                        activeButton == 'none' ? classes.buttonActive : null
+                        activeButton === 'none' ? classes.buttonActive : null
                       )}
                     >
                       <button
@@ -1759,7 +1801,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                           setActiveButton('none');
                         }}
                       >
-                        <img src={noneIcon} />
+                        <img src={noneIcon} alt="Cancel icon" />
                       </button>
                     </div>
                   </Tooltip>
@@ -1783,7 +1825,9 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                   <div
                     className={clsx(
                       classes.buttonContainer,
-                      activeButton == 'linestring' ? classes.buttonActive : null
+                      activeButton === 'linestring'
+                        ? classes.buttonActive
+                        : null
                     )}
                   >
                     <button
@@ -1793,7 +1837,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                         setActiveButton('linestring');
                       }}
                     >
-                      <img src={polyLineIcon} />
+                      <img src={polyLineIcon} alt="line icon" />
                     </button>
                   </div>
                 </Tooltip>
@@ -1803,7 +1847,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                   <div
                     className={clsx(
                       classes.buttonContainer,
-                      activeButton == 'area' ? classes.buttonActive : null
+                      activeButton === 'area' ? classes.buttonActive : null
                     )}
                   >
                     <button
@@ -1813,7 +1857,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                         setActiveButton('area');
                       }}
                     >
-                      <img src={polygonIcon} />
+                      <img src={polygonIcon} alt="polygon icon" />
                     </button>
                   </div>
                 </Tooltip>
@@ -1823,7 +1867,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                   <div
                     className={clsx(
                       classes.buttonContainer,
-                      activeButton == 'cancel' ? classes.buttonActive : null
+                      activeButton === 'cancel' ? classes.buttonActive : null
                     )}
                   >
                     <button
@@ -1833,7 +1877,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                         setActiveButton('cancel');
                       }}
                     >
-                      <img src={noneIcon} />
+                      <img src={noneIcon} alt="cancel icon" />
                     </button>
                   </div>
                 </Tooltip>

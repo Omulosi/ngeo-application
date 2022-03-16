@@ -268,6 +268,23 @@ const MapProvider = ({ children }) => {
     };
   }, []);
 
+  /**
+   * Listens for add custom marker event.
+   *
+   * Takes coordinates of point/arrow on map, passes it to local state,
+   * which is then passed along to a form dialog that allows addition of more
+   * details to the added marker.
+   *
+   */
+  window.emitter.addListener(
+    'addMarker',
+    (feature, coordinatesArray, markerType) => {
+      setCoordinates(coordinatesArray);
+      setMarkerType(markerType);
+      handleOpenAddMarkerDialog();
+    }
+  );
+
   return (
     <MapContext.Provider value={{ map: mapObject }}>
       <div ref={mapRef} className="ol-map">

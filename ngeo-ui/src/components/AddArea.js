@@ -148,9 +148,10 @@ const AddArea = ({ user, assigner, project, disabled }) => {
 
     setCounties(filteredCountyOptions);
 
-    let filteredSubCountyOptions = subCountyOptions.filter(
-      (sc) =>
-        sc?.county.toLocaleLowerCase() === selectedCounty.toLocaleLowerCase()
+    let filteredSubCountyOptions = subCountyOptions.filter((sc) =>
+      selectedCounty
+        ?.toLocaleLowerCase()
+        .includes(sc?.county.toLocaleLowerCase())
     );
     setSubCounties(filteredSubCountyOptions);
 
@@ -161,9 +162,9 @@ const AddArea = ({ user, assigner, project, disabled }) => {
           .includes(
             selectedSubCounty.length && selectedSubCounty[0].toLocaleLowerCase()
           ) ||
-        div.county
+        selectedCounty
           .toLocaleLowerCase()
-          .includes(selectedCounty.toLocaleLowerCase())
+          .includes(div.county.toLocaleLowerCase())
     );
     setDivisions(filteredDivisionOptions);
 
@@ -174,9 +175,9 @@ const AddArea = ({ user, assigner, project, disabled }) => {
           .includes(
             selectedDivision.length && selectedDivision[0].toLocaleLowerCase()
           ) ||
-        loc.county
+        selectedCounty
           .toLocaleLowerCase()
-          .includes(selectedCounty.toLocaleLowerCase())
+          .includes(loc?.county.toLocaleLowerCase())
     );
     setLocations(filteredLocationOptions);
 
@@ -187,9 +188,9 @@ const AddArea = ({ user, assigner, project, disabled }) => {
           .includes(
             selectedLocation.length && selectedLocation[0].toLocaleLowerCase()
           ) ||
-        sub.county
+        selectedCounty
           .toLocaleLowerCase()
-          .includes(selectedCounty.toLocaleLowerCase())
+          .includes(sub?.county.toLocaleLowerCase())
     );
     setSubLocations(filteredSubLocationOptions);
   }, [

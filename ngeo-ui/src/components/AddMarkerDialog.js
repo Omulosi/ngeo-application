@@ -35,6 +35,8 @@ import AsynchronousComboBox from 'src/components/AsynchronousComboBox';
 import { useThemes } from 'src/fetch/themes';
 import mainConfig from 'src/config/config.json';
 import 'react-datepicker/dist/react-datepicker.css';
+import useUser from '../fetch/user';
+import { isCountyManager } from '../utils/getRole';
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -83,6 +85,8 @@ export default function AddMarkerDialog({
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
+
+  const { data: currentUser } = useUser();
 
   const countyData = helpers.getItemsFromStorage('counties');
   const { data: themeData, isLoading, isSuccess: themeSuccess } = useThemes();
@@ -138,15 +142,33 @@ export default function AddMarkerDialog({
           action = addProject;
           break;
         case 'threat':
+          const isCM = isCountyManager(currentUser?.attributes?.role);
+          const userCounty = currentUser?.attributes?.area?.county;
           action = addThreat;
           let thisThreat = threatTypes.filter(
             (threat) => threat.value === values.threatType
           );
           color = (thisThreat.length && thisThreat[0].color) || '';
+          const allowableCounties = [
+            threatValues?.from?.toLocaleLowerCase(),
+            threatValues?.to?.toLocaleLowerCase()
+          ];
+
+          if (!allowableCounties.includes(userCounty?.toLocaleLowerCase())) {
+            enqueueSnackbar(
+              'You can only add threats associated with your own county',
+              {
+                variant: 'error'
+              }
+            );
+            return;
+          }
+
           break;
         default:
           action = null;
       }
+
       dispatch(
         action(
           {

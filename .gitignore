@@ -1,0 +1,7 @@
+geoserver/
+mapserver/
+*db/
+*node_modules
+*.env
+*.vscode
+*build/

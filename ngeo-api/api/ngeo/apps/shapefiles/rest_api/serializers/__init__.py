@@ -1,0 +1,10 @@
+# from .county import CountySerializer
+# from .sublocation import SublocationSerializer
+# from .isiolo_projects import IsioloProjectsSerializer
+# from .isiolo_key_installations import IsioloKeyInstallationSerializer
+# from .constituency import ConstituencySerializer
+# from .county_gazetted import CountyGazettedSerializer
+# from .outreach_office import OfficeSerializer
+# from .region import RegionSerializer
+# from .kenya_health import KenyaHealthSerializer
+# from .sub_county import KenyaSubCountySerializer
