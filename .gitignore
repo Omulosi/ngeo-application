@@ -4,4 +4,4 @@ mapserver/
 *node_modules
 *.env
 *.vscode
-*build/
+build/

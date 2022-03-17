@@ -1,0 +1,89 @@
+version: "3.7"
+
+services:
+  postgis:
+    container_name: ngeo_db
+    image: kartoza/postgis
+    volumes:
+      - "../ngeo-api/api/data/db:/var/lib/postgresql/data"
+    environment:
+      - POSTGRES_DB=ngeo_db_a
+      - POSTGRES_USER=ngeo_db_a
+      - POSTGRES_PASSWORD=ngeo_db_a
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: "exit 0"
+    # network_mode: host
+    networks:
+      - ngeo
+
+  adminer:
+    container_name: ngeo_adminer
+    image: adminer
+    ports:
+      - "9090:8080"
+    networks:
+      - ngeo
+
+networks:
+  ngeo:
+    driver: bridge
+
+  # mapserver:
+  #   image: klokantech/openmaptiles-server
+  #   container_name: ngeo_mapserver
+  #   restart: always
+  #   ports:
+  #     - "7000:80"
+  #   volumes:
+  #     - ../mapserver/data:/data
+  #   networks:
+  #     - ngeo
+
+  # geoserver:
+  #   container_name: ngeo_geoserver
+  #   build:
+  #     context: "../geoserver"
+  #     dockerfile: Dockerfile.geoserver
+  #   depends_on:
+  #     - postgis
+  #   volumes:
+  #     - "../geoserver:/geoserver"
+  #   ports:
+  #     - "8080:8080"
+  #   healthcheck:
+  #     test: "exit 0"
+  #   network_mode: host
+
+  # nominatim:
+  #   container_name: ngeo_nominatim
+  #   image: mediagis/nominatim:3.7
+  #   restart: always
+  #   volumes:
+  #     - "../mapserver/data/kenya-latest.osm.pbf:/nominatim/data.osm.pbf"
+  #   ports:
+  #     - "9000:8080"
+  #   environment:
+  #     # see https://github.com/mediagis/nominatim-docker/tree/master/3.7#configuration for more options
+  #     PBF_URL: https://download.geofabrik.de/africa/kenya-latest.osm.pbf
+  #     REPLICATION_URL: https://download.geofabrik.de/africa/kenya-updates/
+  # shm_size: 1gb
+
+  # frontend:
+  #   container_name: ngeo_frontend
+  #   build:
+  #     context: ../ngeo-ui
+  #     dockerfile: Dockerfile.frontend.prod
+  #   ports:
+  #     - "3000:80"
+  #   network_mode: host
+# volumes:
+#   ngeo-pgdata:
+#   geoserver-data:
+#   nominatim-data:
+
+# networks:
+#   ngeo:
+#     driver: bridge
+
