@@ -179,7 +179,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/{{ docs_version }}/howto/static-files/
 
-STATIC_URL = "/static/"
+STATIC_URL = "/static/api/"
 STATIC_ROOT = rel("staticfiles/")
 STATICFILES_DIRS = (rel("static/"),)
 

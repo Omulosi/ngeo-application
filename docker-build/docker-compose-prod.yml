@@ -1,26 +1,11 @@
-version: "3"
+version: "3.7"
 
 services:
-  
-  # proxy:
-  #   image: nginx:alpine 
-  #   container_name: ngeo_proxy
-  #   restart: always
-  #   tty: true
-  #   volumes:
-  #     - ../nginx/nginx.conf:/etc/nginx/nginx.conf
-  #     - ../nginx/ssl/:/etc/ssl/
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   networks:
-  #     - ngeo
-
-  postgis:
+  db:
     container_name: ngeo_db
-    image: kartoza/postgis
+    image: kartoza/postgis:14
     volumes:
-      - "../ngeo-api/api/data/db:/var/lib/postgresql"
+      - "./db:/var/lib/postgresql/data"
     environment:
       - POSTGRES_DB=ngeo_db_a
       - POSTGRES_USER=ngeo_db_a
@@ -29,22 +14,7 @@ services:
       - "5432:5432"
     healthcheck:
       test: "exit 0"
-    network_mode: host
 
-  # api_ngeo:
-  #   container_name: ngeo_api
-  #   build:
-  #     context: ../ngeo-api
-  #     dockerfile: Dockerfile.api
-  #   depends_on:
-  #     - postgis
-  #   environment:
-  #     - NGEO_DATABASE_URL=postgis://ngeo_db_a:ngeo_db_a@192.168.60.109:5432/ngeo_db_b
-  #   ports:
-  #     - "8000:8000"
-  #   network_mode: host
-
-  
   geoserver:
     container_name: ngeo_geoserver
     build:
@@ -53,7 +23,7 @@ services:
     volumes:
       - "../geoserver:/geoserver"
     depends_on:
-      - postgis
+      - db
     environment:
       - GEOSERVER_ADMIN_PASSWORD=geoserver
       - GEOSERVER_ADMIN_USER=admin
@@ -61,56 +31,70 @@ services:
     ports:
       - "8080:8080"
     restart: always
-    network_mode: host
-  
 
   mapserver:
     container_name: ngeo_mapserver
     image: klokantech/openmaptiles-server
     restart: always
+    volumes:
+      - "../mapserver/data:/data"
     ports:
       - "7000:80"
-    volumes:
-      - ../mapserver/data:/data
-    networks:
-      - ngeo
 
   nominatim:
     container_name: nominatim
     image: mediagis/nominatim:3.7
     restart: always
     volumes:
-      - type: bind
-        source: ../mapserver/data/kenya-latest.osm.pbf
-        target: /nominatim/data.osm.pbf
+      - "../mapserver/data/kenya-latest.osm.pbf:/nominatim/data.osm.pdf"
+      - nominatim-data:/var/lib/postgresql/12/main
     ports:
       - "9000:8080"
     environment:
       # see https://github.com/mediagis/nominatim-docker/tree/master/3.7#configuration for more options
       PBF_URL: https://download.geofabrik.de/africa/kenya-latest.osm.pbf
       REPLICATION_URL: https://download.geofabrik.de/africa/kenya-updates/
-    volumes:
-      - nominatim-data:/var/lib/postgresql/12/main
     shm_size: 1gb
+
+  backend:
+    container_name: ngeo_api
+    build:
+      context: ../ngeo-api
+      dockerfile: Dockerfile.api
+    volumes:
+      - backend-static-data:/api/ngeo/staticfiles
+    depends_on:
+      - db
+    environment:
+      - NGEO_DATABASE_URL=postgis://ngeo_db_a:ngeo_db_a@db:5432/ngeo_db_a
+    ports:
+      - "8000:8000"
 
   frontend:
     container_name: ngeo_frontend
     build:
       context: ../ngeo-ui
-      dockerfile: Dockerfile.frontend
+      dockerfile: Dockerfile.frontend.dev
     volumes:
-      - "../ngeo-ui/src/config:/ngeo-ui/src/config"
-      - type: bind
-        source: ../ngeo-ui/src
-        target: /ngeo-ui/src
+      - "../ngeo-ui/src/:/ngeo-ui/src/"
+      - frontend-build-data:/ngeo-ui/build
     ports:
       - "3000:3000"
-    network_mode: host
+
+  nginx:
+    image: nginx:1.21-alpine
+    container_name: ngeo_nginx
+    restart: always
+    tty: true
+    volumes:
+      - "../nginx/ngeo.conf:/etc/nginx/conf.d/default.conf:ro"
+      - frontend-build-data:/var/www/ngeo/build
+      # - backend-static-data:/var/www/ngeo/static
+    ports:
+      - "80:8080"
+      - "443:443"
 
 volumes:
-  geoserver-data:
+  frontend-build-data:
+  backend-static-data:
   nominatim-data:
-
-networks:
-  ngeo:
-    driver: bridge

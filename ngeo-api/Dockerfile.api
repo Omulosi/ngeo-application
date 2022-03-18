@@ -1,7 +1,6 @@
-FROM python:3.7.4
+FROM python:3.8.10
 
-WORKDIR /api
-
+# Setup gdal
 RUN apt-get update
 RUN apt-get install -y software-properties-common && apt-get update
 RUN apt-get install -y python3.7-dev
@@ -11,19 +10,40 @@ RUN apt-get install -y python3-gdal && apt-get update
 ARG CPLUS_INCLUDE_PATH=/usr/include/gdal
 ARG C_INCLUDE_PATH=/usr/include/gdal
 
-ENV NGEO_DATABASE_URL=postgis://ngeo_db_a:ngeo_db_a@127.0.01:5432/ngeo_db_a
+# python setup
+
+ENV NGEO_DATABASE_URL=postgis://ngeo_db_a:ngeo_db_a@db:5432/ngeo_db_a \
+  PYTHONFAULTHANDLER=1 \
+  PYTHONUNBUFFERED=1 \
+  PYTHONHASHSEED=random \
+  PIP_NO_CACHE_DIR=off \
+  PIP_DISABLE_PIP_VERSION_CHECK=on \
+  PIP_DEFAULT_TIMEOUT=100 \
+  POETRY_VERSION=1.1.13 \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONUNBUFFERED=1
+
+RUN pip install "poetry==$POETRY_VERSION"
+
+WORKDIR /api
+
+COPY api/poetry.lock api/pyproject.toml /api/
+
+RUN poetry config virtualenvs.create false \
+  && poetry install --no-interaction --no-ansi
 
 COPY api/ /api/
+
 COPY ./docker-entrypoint-api.sh /api/
 
 RUN ["chmod", "+x", "/api/docker-entrypoint-api.sh"]
-RUN ["pip", "install", "-r", "/api/requirements.txt"]
+# RUN ["pip", "install", "-r", "/api/requirements.txt"]
 
 ENTRYPOINT ["/api/docker-entrypoint-api.sh"]
 
 EXPOSE 8000
 
-RUN ["pwd"]
-RUN ["ls", "-l"]
+# RUN ["pwd"]
+# RUN ["ls", "-l"]
 
-CMD ["gunicorn", "ngeo.wsgi", "-b", "0.0.0.0:8000"]
+# CMD ["gunicorn", "ngeo.wsgi", "-b", "0.0.0.0:8000"]

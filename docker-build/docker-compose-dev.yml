@@ -18,43 +18,39 @@ services:
     networks:
       - ngeo
 
-  adminer:
-    container_name: ngeo_adminer
-    image: adminer
-    ports:
-      - "9090:8080"
-    networks:
-      - ngeo
-
-networks:
-  ngeo:
-    driver: bridge
-
-  # mapserver:
-  #   image: klokantech/openmaptiles-server
-  #   container_name: ngeo_mapserver
-  #   restart: always
+  # adminer:
+  #   container_name: ngeo_adminer
+  #   image: adminer
   #   ports:
-  #     - "7000:80"
-  #   volumes:
-  #     - ../mapserver/data:/data
+  #     - "9090:8080"
   #   networks:
   #     - ngeo
 
-  # geoserver:
-  #   container_name: ngeo_geoserver
-  #   build:
-  #     context: "../geoserver"
-  #     dockerfile: Dockerfile.geoserver
-  #   depends_on:
-  #     - postgis
-  #   volumes:
-  #     - "../geoserver:/geoserver"
-  #   ports:
-  #     - "8080:8080"
-  #   healthcheck:
-  #     test: "exit 0"
-  #   network_mode: host
+  mapserver:
+    image: klokantech/openmaptiles-server
+    container_name: ngeo_mapserver
+    restart: always
+    ports:
+      - "7000:80"
+    volumes:
+      - ../mapserver/data:/data
+    networks:
+      - ngeo
+
+  geoserver:
+    container_name: ngeo_geoserver
+    build:
+      context: "../geoserver"
+      dockerfile: Dockerfile.geoserver
+    depends_on:
+      - postgis
+    volumes:
+      - "../geoserver:/geoserver"
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: "exit 0"
+    network_mode: host
 
   # nominatim:
   #   container_name: ngeo_nominatim
@@ -83,7 +79,6 @@ networks:
 #   geoserver-data:
 #   nominatim-data:
 
-# networks:
-#   ngeo:
-#     driver: bridge
-
+networks:
+  ngeo:
+    driver: bridge

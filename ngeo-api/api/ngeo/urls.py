@@ -32,7 +32,7 @@ admin.site.site_title = 'N-GEO Site Admin'
 admin.site.site_url = settings.WEB_URL
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("api/admin/", admin.site.urls),
     # get list of users or single user
     re_path(r"api/v1/", include("ngeo.apps.account.urls")),
     # Auth endpoints from djoser
