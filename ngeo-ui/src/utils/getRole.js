@@ -5,11 +5,12 @@ export function isFieldOfficer(role) {
 }
 
 export function isCountyManager(role) {
-  return role === roles.CM;
+  return role === roles.CM || role === roles.DCM;
 }
 
 export function isRegionalManager(role) {
-  return role === roles.RM;
+  // Deputy RM has the same rights as RM
+  return role === roles.RM || role === roles.DRM;
 }
 
 export function isFinance(role) {
