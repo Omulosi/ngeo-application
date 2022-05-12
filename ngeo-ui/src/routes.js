@@ -63,9 +63,17 @@ import FieldOfficerProfile from 'src/views/field_officer/FieldOfficerProfile';
 import CountyManagerListView from 'src/views/county_manager';
 import CountyManagerProfile from 'src/views/county_manager/CountyManagerProfile';
 
+// Deputy county managers
+import DeputyCountyManagerListView from 'src/views/county_manager/DeputyCountyManager';
+import DeputyCountyManagerProfile from 'src/views/county_manager/DeputyCountyManagerProfile';
+
 // Regional Managers
 import RegionalManagerListView from 'src/views/regional_manager';
 import RegionalManagerProfile from 'src/views/regional_manager/RegionalManagerProfile';
+
+// Deputy Regional Managers
+import DeputyRegionalManagerListView from 'src/views/regional_manager/DeputyRegionalManager';
+import DeputyRegionalManagerProfile from 'src/views/regional_manager/DeputyRegionalManagerProfile';
 
 // Returns
 // import AllAgentReturns from 'src/views/agent/AllAgentReturns';
@@ -143,9 +151,29 @@ const routes = (isLoggedIn) => [
       { path: 'county_managers', element: <CountyManagerListView /> },
       { path: 'county_managers/:id', element: <CountyManagerProfile /> },
 
+      // Deputy county manager views
+      {
+        path: 'deputy_county_managers',
+        element: <DeputyCountyManagerListView />
+      },
+      {
+        path: 'deputy_county_managers/:id',
+        element: <DeputyCountyManagerProfile />
+      },
+
       // Regional manager views
       { path: 'regional_managers', element: <RegionalManagerListView /> },
       { path: 'regional_managers/:id', element: <RegionalManagerProfile /> },
+
+      // Deputy regional manager views
+      {
+        path: 'deputy_regional_managers',
+        element: <DeputyRegionalManagerListView />
+      },
+      {
+        path: 'deputy_regional_managers/:id',
+        element: <DeputyRegionalManagerProfile />
+      },
 
       // User List
       { path: 'users', element: <UserList /> },

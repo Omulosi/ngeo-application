@@ -7,7 +7,8 @@ import ViewListIcon from '@material-ui/icons/ViewList';
 import WarningIcon from '@material-ui/icons/Warning';
 import {
   User as UserIcon,
-  MapPin
+  MapPin,
+  HelpCircle
   //   Users as UsersIcon
 } from 'react-feather';
 import { roles } from 'src/config';
@@ -28,6 +29,8 @@ const getMenuItems = (user) => {
   const isHR = user && user.role && user.role === roles.HR;
   const isFinance = user && user.role && user.role === roles.Finance;
   const isCEO = user && user.role && user.role === roles.CEO;
+  // deputy rm
+  // deputy cm
 
   const items = [
     {
@@ -79,11 +82,33 @@ const getMenuItems = (user) => {
         !isHR &&
         !isRegionalManager
     },
+    // deputy rm
+    {
+      href: '/app/deputy_regional_managers',
+      icon: PeopleIcon,
+      title: sidebarMenu.d_rm.title,
+      name: sidebarMenu.d_rm.description,
+      visible:
+        isAuthorized &&
+        !isFinance &&
+        !isCountyManager &&
+        !isFieldOfficer &&
+        !isHR &&
+        !isRegionalManager
+    },
     {
       href: '/app/county_managers',
       icon: PeopleIcon,
       title: sidebarMenu.cm.title,
       name: sidebarMenu.cm.description,
+      visible: isAuthorized && (isRegionalManager || isCEO)
+    },
+    // Deputy CM
+    {
+      href: '/app/deputy_county_managers',
+      icon: PeopleIcon,
+      title: sidebarMenu.d_cm.title,
+      name: sidebarMenu.d_cm.description,
       visible: isAuthorized && (isRegionalManager || isCEO)
     },
     {
@@ -149,6 +174,14 @@ const getMenuItems = (user) => {
       title: sidebarMenu.theme.title,
       name: sidebarMenu.theme.description,
       visible: isAuthorized && isFinance
+    },
+    // Help - display user manual as pdf
+    {
+      href: '/app/help',
+      icon: HelpCircle,
+      title: sidebarMenu.help.title,
+      name: sidebarMenu.help.description,
+      visible: isAuthorized
     },
     {
       href: '/app/account',

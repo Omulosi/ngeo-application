@@ -17,7 +17,9 @@ export const roleNames = {
   6: 'CM',
   7: 'FOO',
   8: 'Default-Unassigned',
-  9: 'Human Resource'
+  9: 'Human Resource',
+  10: 'Deputy RM',
+  11: 'Deputy CM'
 };
 
 /**
@@ -63,8 +65,10 @@ export const roles = {
   CM: 6,
   // Field Outreach Officer
   FOO: 7,
+  Default: 8,
   HR: 9,
-  Default: 8
+  DRM: 10, // Deputy RM
+  DCM: 11 // Deputy CM
 };
 
 // update a value to modify all its occurences in the

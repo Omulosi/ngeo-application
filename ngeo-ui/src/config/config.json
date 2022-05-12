@@ -75,7 +75,9 @@
     "hr": { "title": "HR", "description": "Human Resource" },
     "finance": { "title": "Finance", "description": "Finance" },
     "cm": { "title": "CM", "description": "County Manager" },
+    "d_cm": { "title": "DCM", "description": "Deputy County Manager" },
     "rm": { "title": "RM", "description": "Regional Manager" },
+    "d_rm": { "title": "DRM", "description": "Deputy Regional Manager" },
     "foo": { "title": "FOO", "description": "Field Outreach Officer" },
     "agent": { "title": "BEA", "description": "Business Executive Agent" },
     "threat": { "title": "Threats", "description": "Threats" },
@@ -83,7 +85,8 @@
     "project": { "title": "Projects", "description": "Projects" },
     "users": { "title": "Manage Users", "description": "Manage users" },
     "account": { "title": "Account", "description": "Account" },
-    "theme": { "title": "Themes", "description": "Themes" }
+    "theme": { "title": "Themes", "description": "Themes" },
+    "help": { "title": "Help", "description": "Help" }
   },
   "globalData": {
     "appName": "N-GEO",
@@ -104,6 +107,9 @@
       },
       "CM": {
         "name": "County Manager"
+      },
+      "DCM": {
+        "name": "Deputy County Manager"
       },
       "FOO": {
         "name": "Field Outreach Officer"
