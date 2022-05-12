@@ -7,92 +7,82 @@ import MapProvider from 'src/views/ngeoMap/Map';
 import DashboardLayout from 'src/layouts/DashboardLayout';
 import MainLayout from 'src/layouts/MainLayout';
 
-// Authentication
-import LoginView from 'src/views/users/AuthView/LoginView';
-import RegisterView from 'src/views/users/AuthView/RegisterView';
-import ForgotPasswordView from 'src/views/users/AuthView/ForgotPassword';
-import ResetPasswordView from 'src/views/users/AuthView/ResetPassword';
+import {
+  // Authentication
+  LoginView,
+  RegisterView,
+  ForgotPasswordView,
+  ResetPasswordView,
 
-// User profile
-import AccountView from 'src/views/users/AccountView';
-import SettingsView from 'src/views/settings/SettingsView';
+  // User profile
+  AccountView,
+  SettingsView,
 
-// Projects
-import ProjectsView from 'src/views/project';
-import ProjectDetailView from 'src/views/project/ProjectDetail';
-// import ProjectProfileView from 'src/views/project/ProjectProfile';
-import AddProjectView from 'src/views/project/AddProject';
-import EditProjectView from 'src/views/project/EditProject';
+  // Projects
+  ProjectsView,
+  ProjectDetailView,
+  AddProjectView,
+  EditProjectView,
 
-// Home page
-import HomeView from 'src/views/home';
+  // Home view
+  HomeView,
 
-// Welcome Page
-import WelcomeView from 'src/views/activity';
+  // Welcome view
+  WelcomeView,
 
-// Map
-// import MapView from 'src/views/map/Map';
-// Do not use code splitting here, causes strange behavior on map load
-import NgeoMapView from 'src/views/ngeoMap';
+  // Ngeomap
+  NgeoMapView,
 
-// Agents
-import AgentsView from 'src/views/agent';
-import AgentProfile from 'src/views/agent/AgentProfile';
-import AddAgentView from 'src/views/agent/AddAgent';
-import EditAgentView from 'src/views/agent/EditAgent';
+  // Agents
+  AgentsView,
+  AgentProfile,
+  AddAgentView,
+  EditAgentView,
 
-// Incidents
-import IncidentsView from 'src/views/incident';
-import AddIncidentsView from 'src/views/incident/AddIncident';
-import IncidentDetail from 'src/views/incident/IncidentDetail';
+  // Incidents
+  IncidentsView,
+  IncidentDetail,
+  AddIncidentsView,
 
-// Dashboard
-import DashboardView from 'src/views/reports/DashboardView';
+  // Dashboard
+  DashboardView,
 
-// General
-import NotFoundView from 'src/views/errors/NotFoundView';
+  // Not found view
+  NotFoundView,
 
-// Field Officers
-import FieldOfficerListView from 'src/views/field_officer';
-import FieldOfficerProfile from 'src/views/field_officer/FieldOfficerProfile';
-// import AddFieldOfficerView from 'src/views/field_officer/AddFieldOfficer';
-// import EditFieldOfficerView from 'src/views/field_officer/EditFieldOfficer';
-// import FieldOfficerAgentView from 'src/views/field_officer/ManageAgents';
+  // Field officers
+  FieldOfficerListView,
+  FieldOfficerProfile,
 
-// County Managers
-import CountyManagerListView from 'src/views/county_manager';
-import CountyManagerProfile from 'src/views/county_manager/CountyManagerProfile';
+  // County managers
+  CountyManagerListView,
+  CountyManagerProfile,
 
-// Deputy county managers
-import DeputyCountyManagerListView from 'src/views/county_manager/DeputyCountyManager';
-import DeputyCountyManagerProfile from 'src/views/county_manager/DeputyCountyManagerProfile';
+  // Deputy county manager
+  DeputyCountyManagerListView,
+  DeputyCountyManagerProfile,
 
-// Regional Managers
-import RegionalManagerListView from 'src/views/regional_manager';
-import RegionalManagerProfile from 'src/views/regional_manager/RegionalManagerProfile';
+  // Regional manager
+  RegionalManagerListView,
+  RegionalManagerProfile,
 
-// Deputy Regional Managers
-import DeputyRegionalManagerListView from 'src/views/regional_manager/DeputyRegionalManager';
-import DeputyRegionalManagerProfile from 'src/views/regional_manager/DeputyRegionalManagerProfile';
+  // Deputy regional managers
+  DeputyRegionalManagerListView,
+  DeputyRegionalManagerProfile,
 
-// Returns
-// import AllAgentReturns from 'src/views/agent/AllAgentReturns';
-// import AddReturnView from 'src/views/agent/AddReturn';
-// import EditReturnView from 'src/views/agent/EditReturn';
-// import ReturnDetailView from 'src/views/agent/ReturnDetails';
+  // Users
+  UserList,
+  UserProfile,
 
-// User List
-import UserList from 'src/views/users/UserListView';
-import UserProfile from 'src/views/users/UserListView/UserProfile';
+  // Threats
+  ThreatDetail,
+  ThreatsView,
+  AddThreatView,
+  EditThreatView,
 
-// Threats
-import ThreatsView from 'src/views/threats';
-import AddThreatView from 'src/views/threats/AddThreat';
-import EditThreatView from 'src/views/threats/EditThreat';
-import ThreatDetail from 'src/views/threats/ThreatDetail';
-
-// Themes
-import ThemesView from 'src/views/themes';
+  // Themes
+  ThemesView
+} from 'src/views';
 
 const routes = (isLoggedIn) => [
   {
@@ -140,18 +130,18 @@ const routes = (isLoggedIn) => [
       { path: 'threats/edit/:id', element: <EditThreatView /> },
       { path: 'threats/:id', element: <ThreatDetail /> },
 
-      // field officers views
+      // field officers views.
       { path: 'field_officers', element: <FieldOfficerListView /> },
       { path: 'field_officers/:id', element: <FieldOfficerProfile /> },
       // { path: 'field_officers/add', element: <AddFieldOfficerView /> },
       // { path: 'field_officers/edit/:id', element: <EditFieldOfficerView /> },
       // { path: 'field_officers/agents/:id', element: <FieldOfficerAgentView /> },
 
-      // county manager views
+      // county manager views.
       { path: 'county_managers', element: <CountyManagerListView /> },
       { path: 'county_managers/:id', element: <CountyManagerProfile /> },
 
-      // Deputy county manager views
+      // Deputy county manager views.
       {
         path: 'deputy_county_managers',
         element: <DeputyCountyManagerListView />
