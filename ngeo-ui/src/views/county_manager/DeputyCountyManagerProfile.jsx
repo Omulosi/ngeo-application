@@ -10,7 +10,7 @@ import LineProgress from 'src/components/LineProgress';
 import TabPanel from 'src/components/TabPanel';
 import DisplayProjects from 'src/components/DisplayProjects';
 import capitalize from 'src/utils/capitalize';
-import { useCountyManagerById } from 'src/fetch/county_managers';
+import { useDeputyCountyManagerById } from 'src/fetch/county_managers';
 import DisplayFieldOfficerList from 'src/components/DisplayFieldOfficerList';
 import AssignProject from 'src/components/AssignProject';
 import AssignArea from 'src/components/AssignArea';
@@ -47,7 +47,7 @@ const a11yProps = (index) => {
 };
 
 /* eslint-disable */
-const CountyManagerProfile = () => {
+const DeputyCountyManagerProfile = () => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const { id } = useParams();
@@ -71,7 +71,7 @@ const CountyManagerProfile = () => {
     isLoading,
     error,
     isSuccess
-  } = useCountyManagerById(id);
+  } = useDeputyCountyManagerById(id);
 
   const {
     data: fieldOfficerList,
@@ -82,7 +82,7 @@ const CountyManagerProfile = () => {
 
   if (error) {
     console.log(`Error => ${error}`);
-    enqueueSnackbar('Unable to fetch county managers profile data', {
+    enqueueSnackbar('Unable to fetch deputy county managers profile data', {
       variant: 'error'
     });
   }
@@ -92,9 +92,9 @@ const CountyManagerProfile = () => {
   let countyManagerFieldOfficers = [];
   if (isSuccess) {
     details = {
-      ...countyManager.attributes.user,
+      ...countyManager.attributes?.user,
       id: countyManager.id,
-      area: countyManager.attributes?.area?.county
+      area: countyManager.attributes.area?.county
     };
 
     countyManagerProjects = countyManager.attributes?.projects?.features;
@@ -114,7 +114,7 @@ const CountyManagerProfile = () => {
   }
 
   if (projectSuccess) {
-    countyManagerProjects = projectList.results?.features?.filter(
+    countyManagerProjects = projectList.results.features.filter(
       (proj) => proj.properties.area?.county === details.area
     );
   }
@@ -126,15 +126,15 @@ const CountyManagerProfile = () => {
   };
 
   return (
-    <Page title={`${siteNames.CM?.name} Profile`} className={classes.root}>
+    <Page title={`${siteNames?.DCM?.name} Profile`} className={classes.root}>
       <div className={classes.progress}>{isLoading && <LineProgress />}</div>
       <Container maxWidth={false}>
         <PageToolbar
           title={
             /* eslint-disable */
             details
-              ? `County Manager: ${capitalize(
-                  details?.first_name
+              ? `Deputy County Manager: ${capitalize(
+                  details.first_name
                 )} ${capitalize(details.last_name)}`
               : ''
           }
@@ -197,4 +197,4 @@ const CountyManagerProfile = () => {
   );
 };
 
-export default CountyManagerProfile;
+export default DeputyCountyManagerProfile;
