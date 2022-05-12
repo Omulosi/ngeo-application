@@ -74,7 +74,7 @@ services:
     container_name: ngeo_frontend
     build:
       context: ../ngeo-ui
-      dockerfile: Dockerfile.frontend.dev
+      dockerfile: Dockerfile.frontend.prod
     volumes:
       - "../ngeo-ui/src/:/ngeo-ui/src/"
       - frontend-build-data:/ngeo-ui/build

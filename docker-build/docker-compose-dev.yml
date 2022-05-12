@@ -14,9 +14,7 @@ services:
       - "5432:5432"
     healthcheck:
       test: "exit 0"
-    # network_mode: host
-    networks:
-      - ngeo
+    network_mode: host
 
   # adminer:
   #   container_name: ngeo_adminer
@@ -33,9 +31,8 @@ services:
     ports:
       - "7000:80"
     volumes:
-      - ../mapserver/data:/data
-    networks:
-      - ngeo
+      - "../mapserver/data:/data"
+    network_mode: host
 
   geoserver:
     container_name: ngeo_geoserver
