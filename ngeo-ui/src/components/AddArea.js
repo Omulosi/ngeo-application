@@ -481,7 +481,6 @@ const AddArea = ({ user, assigner, project, disabled }) => {
                   multiple={true}
                   label="Location(s)"
                   name="location"
-                  multiple={true}
                   value={values.location[0]}
                   options={filteredLocationOptions}
                   groupBy={(option) => option.county}
@@ -500,7 +499,6 @@ const AddArea = ({ user, assigner, project, disabled }) => {
                   multiple={true}
                   label="Sub-Location(s)"
                   name="sub_location"
-                  multiple={true}
                   value={values.sub_location[0]}
                   options={filteredSubLocationOptions}
                   groupBy={(option) => option.county}
