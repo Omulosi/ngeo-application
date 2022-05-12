@@ -35,11 +35,10 @@ const useStyles = makeStyles(() => ({
     marginLeft: '0.7rem'
   }
 }));
+
 const UserList = ({ userList, user, title }) => {
   const navigate = useNavigate();
   const classes = useStyles();
-
-  console.log({ userList });
 
   let rows =
     userList.length > 0

@@ -118,11 +118,14 @@ const UserProfile = () => {
               </Grid>
             )}
 
-            {role && [roles.RM, roles.CM, roles.FOO].includes(role) && (
-              <Grid item xl={6} lg={6} md={6} xs={12}>
-                <AssignArea user={details} />
-              </Grid>
-            )}
+            {role &&
+              [roles.RM, roles.RM, roles.CM, roles.DCM, roles.FOO].includes(
+                role
+              ) && (
+                <Grid item xl={6} lg={6} md={6} xs={12}>
+                  <AssignArea user={details} />
+                </Grid>
+              )}
 
             {details?.is_active ? (
               <Grid item xl={6} lg={6} md={6} xs={12}>
