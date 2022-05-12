@@ -5,7 +5,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from ngeo.apps.account.models import User
 from ngeo.apps.field_officer.models import FieldOfficer
-from ngeo.apps.county_manager.models import CountyManager
+from ngeo.apps.county_manager.models import CountyManager, DeputyCountyManager
 from ngeo.apps.regional_manager.models import RegionalManager
 from ngeo.apps.agents.models import Agent
 from ngeo.apps.projects.models import Project
@@ -112,10 +112,35 @@ class AssignArea(APIView):
                 county_manager.save()
                 return Response("Area successfuly assigned to county manager",
                                 status=status.HTTP_200_OK)
+
+            #
+            # Assignee is Deputy County Manager
+            #
+            if user and user.role == User.DCM:
+                region = data.get('region')
+                county = data.get("county").pop()
+                deputy_county_manager = get_object_or_404(DeputyCountyManager, user=user)
+                # Check if DCM already had an area assigned to them, in this
+                # case a new county will be assigned to them
+                if deputy_county_manager.area:
+                    deputy_county_manager.area.region = region
+                    deputy_county_manager.area.county = county
+                # Area being assigned for the first time
+                # Create a new area instance and assign it
+                if deputy_county_manager.area is None:
+                    area = Area(region=region, county=county)
+                    deputy_county_manager.area = area
+                deputy_county_manager.area.save()
+                deputy_county_manager.save()
+                return Response("Area successfuly assigned to deputy county manager",
+                                status=status.HTTP_200_OK)
+
+
             #
             # Assignee is Regional Manager
             #
             if user and user.role == User.RM:
+                 
                 region = data.get("region")
                 region_manager = get_object_or_404(RegionalManager, user=user)
                 if region_manager.area:
@@ -132,7 +157,7 @@ class AssignArea(APIView):
             # Assignee is Field Officer
             #
             if user and user.role == User.FOO:
-                # 
+                
                 region = data.get('region')
                 county = data.get("county")
                 
@@ -148,6 +173,7 @@ class AssignArea(APIView):
                 # sub_counties = [s for s in data.get("sub_county", []) if s]
 
                 field_officer = get_object_or_404(FieldOfficer, user=user)
+
                 new_county_assigned = False
                 
                 # Updating field officer area
@@ -281,4 +307,5 @@ class AssignArea(APIView):
                 return Response("Area successfuly assigned to project",
                                 status=status.HTTP_200_OK)
         except Exception as e:
+            print(e)
             raise

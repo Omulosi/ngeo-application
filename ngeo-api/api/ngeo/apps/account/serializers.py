@@ -6,7 +6,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ParseError
 from django.contrib.auth.models import update_last_login
 from ngeo.apps.field_officer.models import FieldOfficer
-from ngeo.apps.county_manager.models import CountyManager
+from ngeo.apps.county_manager.models import CountyManager, DeputyCountyManager
 from ngeo.apps.regional_manager.models import RegionalManager
 from ngeo.apps.finance.models import FinanceOfficer
 from ngeo.apps.human_resource.models import HumanResource
@@ -71,7 +71,9 @@ class UserSerializer(serializers.ModelSerializer):
                 FinanceOfficer.objects.filter(user=obj).delete()
                 RegionalManager.objects.filter(user=obj).delete()
                 CountyManager.objects.filter(user=obj).delete()
+                DeputyCountyManager.objects.filter(user=obj).delete()
                 FieldOfficer.objects.filter(user=obj).delete()
+
 
                 # Create new user profile for this role
                 if role == User.CEO:
@@ -85,9 +87,15 @@ class UserSerializer(serializers.ModelSerializer):
                  
                 if role == User.RM:
                     regional_manager = RegionalManager.objects.create(user=obj)
+
+                # if role == User.DRM:
+                #     deputy_regional_manager = RegionalManager.objects.create(user=obj)
                   
                 if role == User.CM:
                     county_manager = CountyManager.objects.create(user=obj)
+
+                if role == User.DCM:
+                    deputy_county_manager = DeputyCountyManager.objects.create(user=obj)
                    
                 if role == User.FOO:
                     field_officer = FieldOfficer.objects.create(user=obj)

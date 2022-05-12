@@ -22,6 +22,8 @@ class User(PermissionsMixin, CoreModel, AbstractBaseUser):
     FOO = 7  # Field Outreach Officer
     UNASSIGNED = 8
     HR = 9  # Human Resource
+    DRM = 10 # Deputy RM
+    DCM = 11 # Deputy CM
 
     ROLE_CHOICES = (
         (ADMIN, "Admin"),
@@ -33,6 +35,8 @@ class User(PermissionsMixin, CoreModel, AbstractBaseUser):
         (FOO, "Field Outreach Officer"),
         (UNASSIGNED, "Unassigned"),
         (HR, "Human Resource"),
+        (DRM, "Deputy Regional Manager"),
+        (DCM, "Deputy County Manager"),
     )
 
     email = models.EmailField(verbose_name=_("Email"), unique=True)

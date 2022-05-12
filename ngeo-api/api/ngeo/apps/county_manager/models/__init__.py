@@ -1,1 +1,1 @@
-from .county_manager import CountyManager
+from .county_manager import CountyManager, DeputyCountyManager

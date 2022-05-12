@@ -13,6 +13,7 @@ class CountyManager(models.Model):
     area = models.OneToOneField(Area,
                                 on_delete=models.SET_NULL, null=True, blank=True,
                                 related_name="cm_area")
+                                
     regional_manager = models.ForeignKey(RegionalManager,
                                          on_delete=models.SET_NULL,
                                          blank=True,
@@ -25,3 +26,25 @@ class CountyManager(models.Model):
         
     def __str__(self):
         return f"{self.user.email} - CM "
+
+class DeputyCountyManager(models.Model):
+    user = models.OneToOneField(User,
+                                on_delete=models.SET_NULL,
+                                null=True,
+                              related_name="deputy_county_manager")
+    
+    area = models.OneToOneField(Area,
+                                on_delete=models.SET_NULL, null=True, blank=True,
+                                related_name="dcm_area")
+    regional_manager = models.ForeignKey(RegionalManager,
+                                         on_delete=models.SET_NULL,
+                                         blank=True,
+                                         null=True,
+                                         related_name="deputy_county_managers")
+
+    def update_county(self, county_name):
+        self.area.county = county_name
+        self.area.save()
+        
+    def __str__(self):
+        return f"{self.user.email} - Deputy CM "
