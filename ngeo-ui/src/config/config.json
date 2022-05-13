@@ -105,6 +105,9 @@
       "RM": {
         "name": "Regional Manager"
       },
+      "DRM": {
+        "name": "deputy Regional Manager"
+      },
       "CM": {
         "name": "County Manager"
       },

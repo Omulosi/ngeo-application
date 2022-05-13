@@ -5,9 +5,11 @@ import {
   isFinance,
   isHR,
   isRegionalManager,
+  isDeputyRegionalManager,
   isCountyManager,
   isFieldOfficer,
-  isCEO
+  isCEO,
+  isDeputyCountyManager
 } from 'src/utils/getRole';
 
 const useUserStatistics = ({ userList, role, userArea }) => {
@@ -17,7 +19,9 @@ const useUserStatistics = ({ userList, role, userArea }) => {
     ceos: [],
     hrs: [],
     regionalManagers: [],
+    deputyRegionalManagers: [],
     countyManagers: [],
+    deputyCountyManagers: [],
     fieldOfficers: [],
     userCount: []
   });
@@ -40,16 +44,24 @@ const useUserStatistics = ({ userList, role, userArea }) => {
       ? userList.filter((user) => isRegionalManager(user.attributes.role))
       : [];
 
+    const deputyRegionalManagers = Array.isArray(userList)
+      ? userList.filter((user) => isDeputyRegionalManager(user.attributes.role))
+      : [];
+
     let countyManagers = Array.isArray(userList)
       ? userList.filter((user) => isCountyManager(user?.attributes?.role))
+      : [];
+
+    let deputyCountyManagers = Array.isArray(userList)
+      ? userList.filter((user) => isDeputyCountyManager(user?.attributes?.role))
       : [];
 
     let fieldOfficers = Array.isArray(userList)
       ? userList.filter((user) => isFieldOfficer(user.attributes.role))
       : [];
 
+    // county managers for currently logged in RM
     if (isRegionalManager(role)) {
-      // debugger;
       countyManagers = Array.isArray(userList)
         ? userList.filter(
             (user) =>
@@ -93,7 +105,9 @@ const useUserStatistics = ({ userList, role, userArea }) => {
       ceos,
       hrs,
       regionalManagers,
+      deputyRegionalManagers,
       countyManagers,
+      deputyCountyManagers,
       fieldOfficers,
       userCount
     }));

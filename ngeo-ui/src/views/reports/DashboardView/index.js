@@ -10,7 +10,9 @@ import {
   isFinance,
   isHR,
   isRegionalManager,
+  isDeputyRegionalManager,
   isCountyManager,
+  isDeputyCountyManager,
   isFieldOfficer,
   isCEO
 } from 'src/utils/getRole';
@@ -71,7 +73,9 @@ const Dashboard = () => {
     ceos,
     hrs,
     regionalManagers,
+    deputyRegionalManagers,
     countyManagers,
+    deputyCountyManagers,
     fieldOfficers,
     userCount
   } = useUserStatistics({ userList, role, userArea });
@@ -136,6 +140,7 @@ const Dashboard = () => {
             </Grid>
           )}
 
+          {/** regional managers */}
           {!isFinance(role) &&
             !isRegionalManager(role) &&
             !isCountyManager(role) &&
@@ -150,6 +155,26 @@ const Dashboard = () => {
               </Grid>
             )}
 
+          {/** deputy regional managers */}
+          {!isFinance(role) &&
+            !isRegionalManager(role) &&
+            !isDeputyRegionalManager(role) &&
+            !isCountyManager(role) &&
+            !isFieldOfficer(role) && (
+              <Grid item lg={3} sm={6} xl={3} xs={12}>
+                <SummaryCard
+                  label={`${globalData.siteNames.DRM.name.toUpperCase()}(S)`}
+                  count={deputyRegionalManagers?.length}
+                >
+                  <UserList
+                    userList={deputyRegionalManagers}
+                    user={userDetail}
+                  />
+                </SummaryCard>
+              </Grid>
+            )}
+
+          {/** county managers */}
           {!isFinance(role) && !isCountyManager(role) && !isFieldOfficer(role) && (
             <Grid item lg={3} sm={6} xl={3} xs={12}>
               <SummaryCard
@@ -160,6 +185,21 @@ const Dashboard = () => {
               </SummaryCard>
             </Grid>
           )}
+
+          {/** deputy county managers */}
+          {!isFinance(role) &&
+            !isCountyManager(role) &&
+            !isDeputyCountyManager(role) &&
+            !isFieldOfficer(role) && (
+              <Grid item lg={3} sm={6} xl={3} xs={12}>
+                <SummaryCard
+                  label={`${globalData.siteNames.DCM.name.toUpperCase()}(S)`}
+                  count={deputyCountyManagers?.length}
+                >
+                  <UserList userList={deputyCountyManagers} user={userDetail} />
+                </SummaryCard>
+              </Grid>
+            )}
 
           {!isFinance(role) && !isFieldOfficer(role) && (
             <Grid item lg={3} sm={6} xl={3} xs={12}>

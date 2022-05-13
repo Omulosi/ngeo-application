@@ -1,13 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import ErrorBoundary from 'antd/lib/alert/ErrorBoundary';
-import { DrawerProvider } from './context/drawer.context';
+import AppProviders from './AppProviders';
 
 import App from './App';
-import store from './redux/store';
 
 import * as serviceWorker from './serviceWorker';
 // loads leaflet CSS
@@ -19,16 +14,6 @@ import './index.css';
 
 const { EventEmitter } = require('fbemitter');
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      staleTime: Infinity,
-      cacheTime: 0
-    }
-  }
-});
-
 // GLOBAL VARIABLES
 window.map = null; // Global map object
 window.emitter = new EventEmitter(); // For listening/broadcasting events
@@ -37,17 +22,10 @@ window.isDrawingOrEditing = false;
 
 /* eslint-disable */
 ReactDOM.render(
-  <Provider store={store}>
-    <ErrorBoundary>
-      <BrowserRouter>
-        <QueryClientProvider client={queryClient} contextSharing={true}>
-          <DrawerProvider>
-            <App />
-          </DrawerProvider>
-        </QueryClientProvider>
-      </BrowserRouter>
-    </ErrorBoundary>
-  </Provider>,
+  <AppProviders>
+    <App />
+  </AppProviders>,
+
   document.getElementById('root')
 );
 

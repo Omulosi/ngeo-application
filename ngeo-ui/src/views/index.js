@@ -71,6 +71,8 @@ export { default as ThreatsView } from './threats';
 export { default as AddThreatView } from './threats/AddThreat';
 export { default as EditThreatView } from './threats/EditThreat';
 export { default as ThreatDetail } from './threats/ThreatDetail';
+// help view
+export { default as HelpView } from './help/HelpView';
 
 // Themes
 export { default as ThemesView } from './themes';
