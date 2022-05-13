@@ -29,7 +29,7 @@ import styles from '../geoStyles';
 
 // Todo: Update project titles to be configurable
 
-const PROJECTS_URL = 'http://127.0.0.1:8000/api/v1/projects';
+// const PROJECTS_URL = 'http://127.0.0.1:8000/api/v1/projects';
 
 const SelectControl = ({ source = new VectorSource() }) => {
   const { map } = useContext(MapContext);
@@ -39,6 +39,7 @@ const SelectControl = ({ source = new VectorSource() }) => {
 
     let projects = null;
     let features = [];
+
     try {
       // Get features and add to source
       const { data } = await axiosWithAuth().get('/projects');

@@ -10,10 +10,8 @@ import Feature from 'ol/Feature';
 import { fromLonLat, toLonLat } from 'ol/proj';
 import Point from 'ol/geom/Point';
 import * as helpers from 'src/utils/helpers';
-import FloatingMenu, { FloatingMenuItem } from 'src/utils/helpers/FloatingMenu';
 import { Item as MenuItem } from 'rc-menu';
 import { useNavigate } from 'react-router-dom';
-import Portal from 'src/utils/helpers/Portal';
 import { ENVIRONMENT, BACKEND_HOST } from 'src/config';
 import mainConfig from 'src/config/config.json';
 import MapContext from './MapContext';
@@ -21,9 +19,11 @@ import MapStatus from 'src/components/MapStatus';
 import capitalize from 'src/utils/capitalize';
 import styles from '../geoStyles';
 import AddMarkerDialog from 'src/components/AddMarkerDialog';
+import useUser from 'src/fetch/user';
 import './Map.css';
 // CSS overrides for default open layer styles
 import './olOverrides.css';
+import MapFloatingMenu from './MapFloatingMenu';
 
 const MapProvider = ({ children }) => {
   const mapRef = useRef();
@@ -40,6 +40,10 @@ const MapProvider = ({ children }) => {
 
   const { centerCoords, defaultZoom: zoom, maxZoom, mapserverUrl } = mainConfig;
   const navigate = useNavigate();
+
+  // Get currently logged in user
+  const { data: user } = useUser();
+  const isAuthenticated = user?.isAuthenticated;
 
   // Covert to web mercator dimensions from  degrees
   const center = fromLonLat(centerCoords);
@@ -126,64 +130,17 @@ const MapProvider = ({ children }) => {
 
     /**
      * Custom right click context menu: provides a way to dynamically add markers to map.
-     * Listens for contextmenu event that's emitted on right click.
+     * Listens for contextmenu event that's emitted on right click and renders a portal
+     * inside portal root
      *  */
     map.getViewport().addEventListener('contextmenu', (evt) => {
       evt.preventDefault();
+      if (!isAuthenticated) return;
       contextCoords = map.getEventCoordinate(evt);
-
-      const menu = (
-        <Portal>
-          <FloatingMenu
-            key={helpers.getUID()}
-            buttonEvent={evt}
-            onMenuItemClick={onMenuItemClick}
-            autoY
-            autoX
-          >
-            <MenuItem
-              className={
-                mainConfig.rightClickMenuVisibility[
-                  'sc-floating-menu-add-mymaps'
-                ]
-                  ? 'sc-floating-menu-toolbox-menu-item'
-                  : 'sc-hidden'
-              }
-              key="sc-floating-menu-add-mymaps"
-            >
-              <FloatingMenuItem imageName="point.png" label="Add Marker" />
-            </MenuItem>
-
-            <MenuItem
-              className={
-                mainConfig.rightClickMenuVisibility[
-                  'sc-floating-menu-save-map-extent'
-                ]
-                  ? 'sc-floating-menu-toolbox-menu-item'
-                  : 'sc-hidden'
-              }
-              key="sc-floating-menu-save-map-extent"
-            >
-              <FloatingMenuItem
-                imageName="globe-icon.png"
-                label="Save as Default Extent"
-              />
-            </MenuItem>
-            {/** Show details of a particular feature on layers side bar */}
-            <MenuItem
-              className={
-                mainConfig.rightClickMenuVisibility['sc-floating-menu-identify']
-                  ? 'sc-floating-menu-toolbox-menu-item'
-                  : 'sc-hidden'
-              }
-              key="sc-floating-menu-identify"
-            >
-              <FloatingMenuItem imageName="identify.png" label="Identify" />
-            </MenuItem>
-          </FloatingMenu>
-        </Portal>
+      ReactDOM.render(
+        <MapFloatingMenu evt={evt} onMenuItemClick={onMenuItemClick} />,
+        document.getElementById('portal-root')
       );
-      ReactDOM.render(menu, document.getElementById('portal-root'));
     });
 
     map.once('rendercomplete', () => {

@@ -25,7 +25,8 @@ import {
   isCountyManager,
   isFieldOfficer,
   isCEO as isUserCEO,
-  isRegionalManager
+  isRegionalManager,
+  isDefault
 } from 'src/utils/getRole';
 
 import {
@@ -37,8 +38,6 @@ import {
 import { vectorGeoJson, vectorSourceWMS, vectorSourceImageWMS } from './Source';
 import AccordionItem from './AccordionItem';
 import ListItem from './LayerListItem';
-// icons
-// import { icons } from './geoStyles';
 
 // image icons
 import pointIcon from './images/point.png';
@@ -49,18 +48,21 @@ import noneIcon from './images/none.png';
 
 // Load layers to map
 import { Layers, VectorLayer, TileLayer, ImageLayer } from './Layers';
+
 // Map Controls
 import {
   Controls,
   SearchNominatimControl,
   ProjectSelectControl
 } from './Controls';
+
 // Map Interactions
 import {
   Interactions,
   DrawInteraction,
   MeasureInteraction
 } from './Interactions';
+
 import SideDrawer from './SideDrawerWrapper';
 import Navigation from './Navigation/Navigation';
 import styles, { icons } from './geoStyles';
@@ -426,7 +428,6 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
       color: theme.attributes.color
     })) || [];
 
-  // Get is authenticated only after user query is complete
   const isAuthenticated = user?.isAuthenticated;
   const userData = user?.attributes || {};
   const isFinance = isFinanceOfficer(userData?.role);
@@ -434,6 +435,8 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
   const isCM = isCountyManager(userData?.role);
   const isRM = isRegionalManager(userData?.role);
   const isFOO = isFieldOfficer(userData?.role);
+  const isDefaultUser = isDefault(userData?.role);
+
   let nationalBoundaryExtent = null;
 
   const interactions = [
@@ -443,7 +446,8 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
 
   const controls = [<SearchNominatimControl key={helpers.getUID()} />];
 
-  if (isAuthenticated) {
+  // Default user cannot view projects
+  if (isAuthenticated && !isDefaultUser) {
     controls.push(<ProjectSelectControl key={helpers.getUID()} />);
   }
 
@@ -485,6 +489,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
 
       // List of layers in this group
       let groupLayers = layer.layerGroup.publishables.published;
+
       // One group layer comes as an object, not an array.
       // This makes it into an array that's amenable to be looped
       // over, makes sure loop logic below wont be changed for this
@@ -493,16 +498,17 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
         groupLayers = [groupLayers];
       }
 
+      /**
+       * ******************  Admin Boundaries ****************************
+       */
       if (groupTitle.toLocaleLowerCase().includes('admin boundaries')) {
-        /* ================================ Admin Boundaries ================================= */
-
         // Global container for admin checkbox items to control visibility of corresponding layers
         const adminBoundaryItems = [];
         // Global container to hold all layers in this group
         const adminLayers = [];
 
-        // Create layers and their corresponding control item and update above
-        // containers.
+        // Create layers and their corresponding control item and update the above
+        // array containers.
         groupLayers.forEach((layer) => {
           const layerName = layer.name.split(':')[1];
           // Get this layer's capability info.
@@ -514,7 +520,10 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
           let maxZoom = null;
           let minZoom = null;
           const style = null;
-          let visible = isFinance || isCEO || !isAuthenticated;
+
+          // Default value for layer visibility - all layers for which this value is not
+          // updated will remain initially visible on map load
+          let visible = isFinance || isCEO || !isAuthenticated || isDefaultUser;
           let isVisible = false;
           let zIndex = 0;
           let userArea = null;
@@ -537,8 +546,10 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
             case 'ke_national_boundary':
               maxZoom = 7.5;
               zIndex = BOUNDARY_ZINDEX_OFFSET + groupLayers.length;
+              // Makes layer always visible
               visible = true;
               isVisible = true;
+              // Hides checkbox that conrols layer visibility
               hide = true;
               // set this layer's extent as default extent for when user
               // does not have jurisdiction area.
@@ -558,7 +569,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               nationalBoundaryExtent = extentCRS;
               break;
 
-            // layers whose visibility can be manually set
+            // layers whose visibility can be manually controlled
             case 'ke_region':
               zIndex = BOUNDARY_ZINDEX_OFFSET + groupLayers.length;
               minZoom = 0;
@@ -572,7 +583,6 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               minZoom = 9;
               maxZoom = 10.5;
               zIndex = BOUNDARY_ZINDEX_OFFSET + groupLayers.length - 2;
-
               isVisible = showCounty;
               if (isVisible) {
                 minZoom = null;
@@ -851,8 +861,10 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
         setAdminBoundaryContent([adminBoundaryLayerItems]);
       }
 
+      /**
+       * ****************** Installations ****************************
+       */
       if (groupTitle.toLocaleLowerCase().includes('installations')) {
-        /* ================================ Installations ====================================== */
         const installationItems = [];
         const installationLayers = [];
 
@@ -1104,9 +1116,9 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
             default:
           }
 
-          // If un-authenticated, the following should be automatically visible
+          // If un-authenticated or default user, the following should be automatically visible
           // Update visible and minZoom fields for this special case only
-          if (!isAuthenticated) {
+          if (!isAuthenticated || isDefaultUser) {
             visible =
               layerName.toLocaleLowerCase().includes('ke_gazetted_forest') ||
               layerName.toLocaleLowerCase().includes('ke_class_a_road') ||
@@ -1668,7 +1680,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
       <div id="control-items" style={{ position: 'absolute' }}>
         {/** Map Controls. Check the <Controls></Controls> wrapper */}
         <Controls>{controls}</Controls>
-        {/** zoom, zoom to user area , search. */}
+        {/** zoom, zoom to user area and search functionality */}
         <Navigation />
       </div>
 
@@ -1684,7 +1696,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
 
       <SideDrawer>
         {/** Layers Section - components for controling layer visibility  */}
-        {isAuthenticated && (
+        {isAuthenticated && !isDefaultUser && (
           <List>
             <AccordionItem title="Layers">
               <Divider
@@ -1756,7 +1768,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
         {/** Projects Section - components for adding projects.
           only a finance officer can add projects
         */}
-        {isAuthenticated && isFinanceOfficer(userData.role) && (
+        {isAuthenticated && isFinanceOfficer(userData.role) && !isDefaultUser && (
           <AccordionItem title="Projects">
             <Divider
               component="li"
