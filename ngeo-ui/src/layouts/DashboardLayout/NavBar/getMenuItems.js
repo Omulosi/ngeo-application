@@ -29,6 +29,7 @@ const getMenuItems = (user) => {
   const isHR = user && user.role && user.role === roles.HR;
   const isFinance = user && user.role && user.role === roles.Finance;
   const isCEO = user && user.role && user.role === roles.CEO;
+  const isDefault = user?.role === roles.Default;
   // deputy rm
   // deputy cm
 
@@ -38,7 +39,7 @@ const getMenuItems = (user) => {
       icon: HomeIcon,
       title: sidebarMenu.home.title,
       name: sidebarMenu.home.description,
-      visible: isAuthorized && !isCEO
+      visible: isAuthorized && !isCEO && !isDefault
     },
 
     // {
@@ -52,7 +53,7 @@ const getMenuItems = (user) => {
       icon: DashboardIcon,
       title: sidebarMenu.dashboard.title,
       name: sidebarMenu.dashboard.description,
-      visible: isAuthorized
+      visible: isAuthorized && !isDefault
     },
     {
       href: '/c/map',
@@ -80,7 +81,8 @@ const getMenuItems = (user) => {
         !isCountyManager &&
         !isFieldOfficer &&
         !isHR &&
-        !isRegionalManager
+        !isRegionalManager &&
+        !isDefault
     },
     // deputy rm
     {
@@ -94,14 +96,15 @@ const getMenuItems = (user) => {
         !isCountyManager &&
         !isFieldOfficer &&
         !isHR &&
-        !isRegionalManager
+        !isRegionalManager &&
+        !isDefault
     },
     {
       href: '/app/county_managers',
       icon: PeopleIcon,
       title: sidebarMenu.cm.title,
       name: sidebarMenu.cm.description,
-      visible: isAuthorized && (isRegionalManager || isCEO)
+      visible: isAuthorized && (isRegionalManager || isCEO) && !isDefault
     },
     // Deputy CM
     {
@@ -109,7 +112,7 @@ const getMenuItems = (user) => {
       icon: PeopleIcon,
       title: sidebarMenu.d_cm.title,
       name: sidebarMenu.d_cm.description,
-      visible: isAuthorized && (isRegionalManager || isCEO)
+      visible: isAuthorized && (isRegionalManager || isCEO) && !isDefault
     },
     {
       href: '/app/field_officers',
@@ -117,7 +120,7 @@ const getMenuItems = (user) => {
       title: sidebarMenu.foo.title,
       name: sidebarMenu.foo.description,
 
-      visible: isAuthorized && (isCountyManager || isCEO)
+      visible: isAuthorized && (isCountyManager || isCEO) && !isDefault
     },
     {
       href: '/app/agents',
@@ -127,7 +130,8 @@ const getMenuItems = (user) => {
       visible:
         isAuthorized &&
         (isFieldOfficer || isFinance || isCountyManager || isCEO) &&
-        !isHR
+        !isHR &&
+        !isDefault
       // items: !isFinance && [
       //   {
       //     href: '/app/agents',
@@ -153,7 +157,7 @@ const getMenuItems = (user) => {
       icon: FolderIcon,
       title: sidebarMenu.project.title,
       name: sidebarMenu.project.description,
-      visible: isAuthorized && !isHR // && !isRegionalManager
+      visible: isAuthorized && !isHR && !isDefault // && !isRegionalManager
     },
     // {
     //   href: '/app/incidents',
@@ -166,14 +170,14 @@ const getMenuItems = (user) => {
       icon: WarningIcon,
       title: sidebarMenu.threat.title,
       name: sidebarMenu.threat.description,
-      visible: isAuthorized && !isHR && !isFieldOfficer
+      visible: isAuthorized && !isHR && !isFieldOfficer && !isDefault
     },
     {
       href: '/app/themes',
       icon: ViewListIcon,
       title: sidebarMenu.theme.title,
       name: sidebarMenu.theme.description,
-      visible: isAuthorized && isFinance
+      visible: isAuthorized && isFinance && !isDefault
     },
     // Help - display user manual as pdf
     {

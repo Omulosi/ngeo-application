@@ -81,7 +81,9 @@ import {
   EditThreatView,
 
   // Themes
-  ThemesView
+  ThemesView,
+  // Help
+  HelpView
 } from 'src/views';
 
 const routes = (isLoggedIn) => [
@@ -169,8 +171,11 @@ const routes = (isLoggedIn) => [
       { path: 'users', element: <UserList /> },
       { path: 'users/:id', element: <UserProfile /> },
 
-      // Thenes views
+      // Themes views
       { path: 'themes', element: <ThemesView /> },
+
+      // Help view
+      { path: 'help', element: <HelpView /> },
 
       // Not Found Page
       { path: '*', element: <Navigate to="/404" /> }

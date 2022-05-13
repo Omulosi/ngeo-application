@@ -67,9 +67,14 @@ export const login = (
         .get('/auth/users/me/')
         .then(({ data }) => {
           if (
-            [roles.RM, roles.CM, roles.FOO, roles.CEO, roles.Finance].includes(
-              data.data.attributes.role
-            )
+            [
+              roles.RM,
+              roles.CM,
+              roles.FOO,
+              roles.CEO,
+              roles.Finance,
+              roles.Default
+            ].includes(data.data.attributes.role)
           ) {
             navigate('/c/map', { replace: true });
           } else {
