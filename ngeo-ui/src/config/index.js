@@ -33,9 +33,9 @@ export const roleNames = {
  */
 // (in Agent List Page)
 export const agentTerms = {
-  // 1: 'Permanent - HQ',
-  // 2: 'Permanent - County',
-  2: 'Permanent',
+  1: 'Permanent - HQ',
+  2: 'Permanent - County',
+  // 2: 'Permanent',
   3: 'Contract'
 };
 
@@ -78,7 +78,7 @@ export const queryCentreAttributes = {
   agents: 'BEA',
   hq: 'HQ',
   county: 'County',
-  project: 'Project-123'
+  project: 'Project'
 };
 
 /**
