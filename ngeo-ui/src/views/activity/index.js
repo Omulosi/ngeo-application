@@ -82,12 +82,12 @@ const MyActivity = () => {
       actor_type: notification.attributes.actor_content_type.app_label
     }));
 
-    agentNotifications = notifications.filter(
-      (n) => n.data && Boolean(n.data.agent)
-    );
+    agentNotifications = notifications.filter((n) => Boolean(n.data?.agent));
 
-    projectNotifications = notifications.filter(
-      (n) => n.data && Boolean(n.data.project)
+    console.log({ notifications });
+
+    projectNotifications = notifications.filter((n) =>
+      Boolean(n.data?.project_id)
     );
   }
 
