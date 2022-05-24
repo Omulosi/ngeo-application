@@ -275,13 +275,14 @@ class AssignArea(APIView):
                                 status=status.HTTP_200_OK)
         
             #
-            # Assign project to county
+            # Assign project to region & county
             #
             if project_id:
                 county = data.get("county")
                 region = data.get('region')
                 if county:
                     county = county.pop()
+
                 project = get_object_or_404(Project, pk=project_id)
                 # Check if Project already had an area assigned to it, in this
                 # case a new county will be assigned to it.
@@ -303,6 +304,7 @@ class AssignArea(APIView):
                 # Notify all CMs within this county that a project has been
                 # assigned to the county
                 project.send_notification_to_CM(sender=request.user, county=county)
+                project.send_notification_to_RM(sender=request.user, region=region)
 
                 return Response("Area successfuly assigned to project",
                                 status=status.HTTP_200_OK)
