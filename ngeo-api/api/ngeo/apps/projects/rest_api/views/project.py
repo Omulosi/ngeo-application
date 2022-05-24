@@ -134,10 +134,13 @@ class ProjectDetail(generics.RetrieveUpdateAPIView):
             return Response({"message": "Project successfuly assigned!"},
                             status=status.HTTP_200_OK)
 
+        # Assign project to a field officer
         if field_officer_id:
             field_officer = get_object_or_404(FieldOfficer, pk=field_officer_id)
             project.field_officer = field_officer
             project.save()
+            recipient = get_object_or_404(User, field_officer=field_officer)
+            project.send_notification_to_FOO(sender=request.user, user=recipient)
             logger.critical( f"The Project {project.name} successfully assigned to the Field Officer {field_officer.user.first_name} {field_officer.user.last_name} by the User {user.first_name} {user.last_name} (Staff No: {user.staff_number})")
             return Response({"message": "Project successfuly assigned!"},
                             status=status.HTTP_200_OK)
@@ -149,6 +152,7 @@ class ProjectDetail(generics.RetrieveUpdateAPIView):
             return Response({"message": "Project successfuly assigned!"},
                             status=status.HTTP_200_OK)
         return super().patch(request, pk)
+
 
 class DeleteProject(APIView):
     def patch(self, request, pk):

@@ -7,6 +7,7 @@ from ngeo.apps.agents.models import Agent
 from ngeo.apps.common.models import Area, CommonCoreModel
 from ngeo.apps.county_manager.models import CountyManager
 from ngeo.apps.field_officer.models import FieldOfficer
+from ngeo.apps.regional_manager.models import RegionalManager
 from ngeo.apps.themes.models import Theme
 from notifications.signals import notify
 from safedelete.models import SOFT_DELETE, SafeDeleteModel
@@ -89,6 +90,46 @@ class Project(CommonCoreModel):
                     # Pass any extra data as key value pairs
                     project_id=self.pk
                 )
+
+    def send_notification_to_RM(self, sender, region=None):
+            rm_list = RegionalManager.objects.filter(area__region=region)
+
+            for rm in rm_list:
+                recipient = get_object_or_404(User, regional_manager=rm)
+                # Takes an actor (sender), recipient, verb
+                notify.send(
+                    sender,
+                    recipient=recipient,
+                    verb=
+                    f"The project '{self.name}' has been assigned to this region by: {sender.email}",
+                    # Pass any extra data as key value pairs
+                    project_id=self.pk
+                )
+
+    def send_notification_to_FOO(self, sender, user=None):
+            # rm_list = RegionalManager.objects.filter(area__region=region)
+            
+            if user:
+                notify.send(
+                    sender,
+                    recipient=user,
+                    verb=
+                    f"The project '{self.name}' has been assigned to this field officer by: {sender.email}",
+                    # Pass any extra data as key value pairs
+                    project_id=self.pk
+                )
+
+            # for rm in rm_list:
+            #     recipient = get_object_or_404(User, regional_manager=rm)
+            #     # Takes an actor (sender), recipient, verb
+            #     notify.send(
+            #         sender,
+            #         recipient=recipient,
+            #         verb=
+            #         f"The project '{self.name}' has been assigned to this region by: {sender.email}",
+            #         # Pass any extra data as key value pairs
+            #         project_id=self.pk
+            #     )
 
     def delete(self):
         self.deactivate()
