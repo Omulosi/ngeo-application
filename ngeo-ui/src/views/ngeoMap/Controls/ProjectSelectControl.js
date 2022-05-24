@@ -117,26 +117,26 @@ const SelectControl = ({ source = new VectorSource() }) => {
           property: 'county'
         }),
         new SelectCondition({
-          label: `${queryCentreAttributes.project}(s) - With ${queryCentreAttributes.agents}`,
+          label: `${queryCentreAttributes.project}(s) - with ${queryCentreAttributes.agents}`,
           condition: { attr: 'agent_status', op: '=', val: 'With Agents' }
         }),
         new SelectCondition({
-          label: `${queryCentreAttributes.project}(s) - Without ${queryCentreAttributes.agents}`,
+          label: `${queryCentreAttributes.project}(s) - without ${queryCentreAttributes.agents}`,
           condition: { attr: 'agent_status', op: '=', val: 'Without Agents' }
         }),
         new SelectCondition({
-          label: `${queryCentreAttributes.project}(s) - With ${agentTerms[3]} ${queryCentreAttributes.agents}`,
+          label: `${queryCentreAttributes.project}(s) - with ${agentTerms[3]} ${queryCentreAttributes.agents}`,
           condition: { attr: 'terms', op: '=', val: agentTerms[3] } // 3 => Contract Agent
         }),
         new SelectCondition({
-          label: `${queryCentreAttributes.project}(s) - With ${
+          label: `${queryCentreAttributes.project}(s) - with ${
             agentTerms[1] ? agentTerms[1] : 'Permanent'
           } ${queryCentreAttributes.agents}`,
           condition: { attr: 'terms', op: '=', val: agentTerms[1] } // 1 => Permanent HQ
         }),
 
         new SelectCondition({
-          label: `${queryCentreAttributes.project}(s) - With ${
+          label: `${queryCentreAttributes.project}(s) - with ${
             agentTerms[2] ? agentTerms[2] : 'Permanent'
           } ${queryCentreAttributes.agents}`,
           condition: { attr: 'terms', op: '=', val: agentTerms[1] } // 2 => Permanent County
