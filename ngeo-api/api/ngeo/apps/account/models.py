@@ -115,7 +115,7 @@ class User(PermissionsMixin, CoreModel, AbstractBaseUser):
                     self,
                     recipient=hr,
                     verb=
-                    f"Activate newly registered user: {self.email}",
+                    f"Activate newly registered user: {self.first_name} {self.last_name} ({self.email})",
                     # Pass any extra data as key value pairs
                     user_id=self.pk
                 )

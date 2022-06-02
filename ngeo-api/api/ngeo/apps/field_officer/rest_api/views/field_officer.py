@@ -9,7 +9,6 @@ from ngeo.apps.account.models import User
 from ngeo.apps.agents.models import Agent
 from ...models import FieldOfficer
 from ..serializers import FieldOfficerSerializer
-from notifications.signals import notify
 from ngeo.apps.county_manager.models import CountyManager
 
 logger = logging.getLogger(__name__)

@@ -92,7 +92,7 @@ class AssignArea(APIView):
             project_id = data.get('project_id')
             
             #
-            # Assignee is County Manager
+            # Assignee (user being assigned an area) is County Manager
             #
             if user and user.role == User.CM:
                 region = data.get('region')
@@ -153,8 +153,10 @@ class AssignArea(APIView):
                 return Response(
                     "Area successfuly assigned to regional manager",
                     status=status.HTTP_200_OK)
+            
+            
             #
-            # Assignee is Field Officer
+            # Assignee is a Field Officer
             #
             if user and user.role == User.FOO:
                 
@@ -185,6 +187,7 @@ class AssignArea(APIView):
                         area = Area(region=region, county=county)
                         field_officer.area = area
                         new_county_assigned = True
+
                     # Assign these areas if field officer hasnt been given a new county
                     # Skip if a new county has been given to FOO.
                     if not new_county_assigned:
@@ -201,6 +204,9 @@ class AssignArea(APIView):
                         field_officer.agents.clear()
                         field_officer.projects.clear()
                         field_officer.user.notifications.mark_all_as_deleted()
+
+                        # Notify all CMs in this county
+                        field_officer.send_notification_to_CM(county)
 
                 # Assigning new area to field officer
                 if field_officer.area is None:

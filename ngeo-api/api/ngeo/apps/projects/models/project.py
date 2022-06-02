@@ -10,7 +10,6 @@ from ngeo.apps.field_officer.models import FieldOfficer
 from ngeo.apps.regional_manager.models import RegionalManager
 from ngeo.apps.themes.models import Theme
 from notifications.signals import notify
-from safedelete.models import SOFT_DELETE, SafeDeleteModel
 
 NONE = 0
 BUSINESS_INCUBATION = 1
@@ -86,7 +85,7 @@ class Project(CommonCoreModel):
                     sender,
                     recipient=recipient,
                     verb=
-                    f"The project '{self.name}' has been assigned to this county by: {sender.email}",
+                    f"The project '{self.name}' has been assigned to this county by: {sender.first_name} {sender.last_name}",
                     # Pass any extra data as key value pairs
                     project_id=self.pk
                 )
@@ -101,7 +100,7 @@ class Project(CommonCoreModel):
                     sender,
                     recipient=recipient,
                     verb=
-                    f"The project '{self.name}' has been assigned to this region by: {sender.email}",
+                    f"The project '{self.name}' has been assigned to this region by: {sender.first_name} {sender.last_name}",
                     # Pass any extra data as key value pairs
                     project_id=self.pk
                 )
@@ -114,7 +113,7 @@ class Project(CommonCoreModel):
                     sender,
                     recipient=user,
                     verb=
-                    f"The project '{self.name}' has been assigned to this field officer by: {sender.email}",
+                    f"The project '{self.name}' has been assigned to this field officer by: {sender.first_name} {sender.last_name}",
                     # Pass any extra data as key value pairs
                     project_id=self.pk
                 )

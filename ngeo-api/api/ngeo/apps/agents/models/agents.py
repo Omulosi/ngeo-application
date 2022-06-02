@@ -212,7 +212,7 @@ class Agent(CommonCoreModel):
                     recipient=feedback_recipient,
                     verb=verb,
                     agent=self.id,
-                    denial_reason=denial_reason,
+                    denial_reason=denial_reason or '',
                     # format to valid json values
                     is_approved=approved,
                     is_denied=denied,
@@ -241,9 +241,10 @@ class Agent(CommonCoreModel):
                 field_officer,
                 recipient=recipient,
                 verb=
-                f"Please approve {self.email} to contract terms. Request from {field_officer.user.email}",
+                (f"Please approve {self.first_name} {self.last_name} to contract terms. " 
+                f"Request from {field_officer.user.first_name} {field_officer.user.last_name}"),
                 agent=self.id,
-                approval_reason=reason,
+                approval_reason=reason or '',
             )
 
         if user.role == User.CM:
@@ -267,7 +268,7 @@ class Agent(CommonCoreModel):
                          f"County Manager: {county_manager.user.first_name} {county_manager.user.last_name} was "
                          "Denied!"),
                         agent=self.id,
-                        denial_reason=reason,
+                        denial_reason=reason or '',
                     )
                     return
 
@@ -277,7 +278,8 @@ class Agent(CommonCoreModel):
                     county_manager,
                     recipient=recipient,
                     verb=
-                    f"Approval of  BEA: {self.first_name} {self.last_name} to contract terms by County Manager:{county_manager.user.first_name} {county_manager.user.last_name} was successful",
+                    (f"Approval of  BEA: {self.first_name} {self.last_name} to contract terms by County Manager: " 
+                    f"{county_manager.user.first_name} {county_manager.user.last_name} was successful"),
                     agent=self.id,
                 )
 
@@ -290,9 +292,10 @@ class Agent(CommonCoreModel):
                         county_manager,
                         recipient=recipient,
                         verb=
-                        f"Please approve BEA: {self.first_name} {self.last_name}. Request from County Manager:{county_manager.user.email}",
+                        (f"Please approve BEA: {self.first_name} {self.last_name}. Request from County Manager: " 
+                        f"{county_manager.user.first_name} {county_manager.user.last_name}"),
                         agent=self.id,
-                        approval_reason=self.reason_contract,
+                        approval_reason=self.reason_contract or '',
                     )
             except AssertionError as e:
                 raise
@@ -318,11 +321,11 @@ class Agent(CommonCoreModel):
                         finance_officer,
                         recipient=recipient,
                         verb=
-                        (f"Approval of  BEA: {self.email} to contract terms by "
-                         f"finance officer: {finance_officer.user.email} was "
+                        (f"Approval of  BEA: {self.first_name} {{self.last_name}} to contract terms by "
+                         f"finance officer: {finance_officer.user.first_name} {finance_officer.user.last_name} was "
                          "Denied!"),
                         agent=self.id,
-                        denial_reason=reason,
+                        denial_reason=reason or '',
                     )
                     return
 
@@ -358,9 +361,9 @@ class Agent(CommonCoreModel):
                 field_officer,
                 recipient=recipient,
                 verb=
-                f"Please approve BEA: {self.email} to permanent terms. Request from FOO:{field_officer.user.email}",
+                f"Please approve BEA: {self.first_name} {self.last_name} to permanent terms. Request from FOO:{field_officer.user.first_name} {field_officer.user.last_name}",
                 agent=self.id,
-                approval_reason=reason,
+                approval_reason=reason or '',
             )
 
         if user.role == User.CM:
@@ -383,7 +386,7 @@ class Agent(CommonCoreModel):
                          f"County Manager:{county_manager.user.email} was "
                          "Denied!"),
                         agent=self.id,
-                        denial_reason=reason,
+                        denial_reason=reason or '',
                     )
                     return
 
@@ -393,7 +396,8 @@ class Agent(CommonCoreModel):
                     county_manager,
                     recipient=recipient,
                     verb=
-                    f"Approval of  BEA: {self.email} to permanent terms by County Manager:{county_manager.user.email} was successful",
+                    (f"Approval of  BEA: {self.first_name} {self.last_name} to permanent terms by County Manager: " 
+                    f"{county_manager.user.first_name} {county_manager.user.last_name} was successful"),
                     agent=self.id,
                 )
 
@@ -406,9 +410,10 @@ class Agent(CommonCoreModel):
                         county_manager,
                         recipient=recipient,
                         verb=
-                        f"Please approve BEA: {self.email} to permanent terms. Request from County Manager:{county_manager.user.email}",
+                        (f"Please approve BEA: {self.email} to permanent terms. "
+                        f" Request from County Manager:{county_manager.user.first_name} {county_manager.user.last_name}"),
                         agent=self.id,
-                        approval_reason=self.reason_permanent,
+                        approval_reason=self.reason_permanent or '',
                     )
             except AssertionError as e:
                 raise
@@ -433,11 +438,11 @@ class Agent(CommonCoreModel):
                         finance_officer,
                         recipient=recipient,
                         verb=
-                        (f"Approval of  BEA: {self.email} to permanent terms by "
+                        (f"Approval of  BEA: {self.first_name} {self.last_name} to permanent terms by "
                          f"finance officer: {finance_officer.user.email} was "
                          "Denied!"),
                         agent=self.id,
-                        denial_reason=reason,
+                        denial_reason=reason or '',
                     )
                     return
 
@@ -448,8 +453,8 @@ class Agent(CommonCoreModel):
                     finance_officer,
                     recipient=recipient,
                     verb=(
-                        f"Approval of  BEA: {self.email} to permanent terms by "
-                        f"finance officer: {finance_officer.user.email} was "
+                        f"Approval of  BEA: {self.first_name} {self.last_name} to permanent terms by "
+                        f"finance officer: {finance_officer.user.first_name} {finance_officer.user.last_name} was "
                         "successful"),
                     agent=self.id,
                 )
@@ -501,8 +506,8 @@ class Agent(CommonCoreModel):
                     recipient=recipient,
                     verb=message,
                     agent=self.id,
-                    denial_reason=denial_reason,
-                    delete_reason=delete_reason
+                    denial_reason=denial_reason or '',
+                    delete_reason=delete_reason or ''
                 )
             except AssertionError as e:
                 raise
