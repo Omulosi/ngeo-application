@@ -66,6 +66,7 @@ import {
 import SideDrawer from './SideDrawerWrapper';
 import Navigation from './Navigation/Navigation';
 import styles, { icons } from './geoStyles';
+import useFilteredData from '../../hooks/useFilteredData';
 
 const useStyles = makeStyles({
   map: {
@@ -235,6 +236,11 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
   const [showProject, setShowProject] = useState(true);
   const [showJurisdiction, setShowJurisdiction] = useState(true);
   const [jurisdictionURL, setJurisdictionURL] = useState('');
+
+  const {
+    filteredData: filteredInstallationLayers,
+    handleSearch
+  } = useFilteredData(installationLayers);
 
   const toggleShowUserLayer = (layerName) => {
     switch (layerName.toLocaleLowerCase()) {
@@ -482,7 +488,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
     }
 
     // Object representing user area
-    const userAreaObject = { name: '', type: '', url: '' };
+    const userAreaObject = { name: '', type: '', url: '', names: [] };
 
     layers.forEach((layer) => {
       const groupTitle = layer.layerGroup.title;
@@ -755,8 +761,17 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                 layerName.toLocaleLowerCase().includes('ke_sub_county')
               ) {
                 userArea = subCounty[0];
+                const userAreas = subCounty;
                 userArea = userArea && userArea.toLocaleLowerCase();
-                const areaFilter = `strToLowerCase (SUB_COUN) like '${userArea}'`;
+                let areaFilter = [];
+                userAreas.forEach((area) => {
+                  area = area.toLocaleLowerCase();
+                  const filterStr = `strToLowerCase (SUB_COUN) like '${area}'`;
+                  areaFilter.push(filterStr);
+                });
+
+                areaFilter = areaFilter.join(' or ');
+                // const areaFilter = `strToLowerCase (SUB_COUN) like '${userArea}'`;
                 url = createFilterFeatureQuery(layerName, areaFilter);
                 userAreaObject.type = 'SUB_COUN';
                 userAreaObject.name = userArea;
@@ -1073,7 +1088,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               break;
             case 'ke_town_divhq':
               isVisible = showTownDiv;
-              minZoom = 13.5;
+              minZoom = 13.1;
               hide = true;
               if (isVisible) {
                 minZoom = null;
@@ -1081,7 +1096,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               break;
             case 'ke_town_regionhq':
               isVisible = showTownRegion;
-              minZoom = 13.5;
+              minZoom = 13.1;
               hide = true;
               if (isVisible) {
                 minZoom = null;
@@ -1116,7 +1131,8 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
             default:
           }
 
-          // If un-authenticated or default user, the following should be automatically visible
+          // If un-authenticated or default user, the following should be automatically visible:
+          // - gazetted forest, class a/broads, lakes, region hqs
           // Update visible and minZoom fields for this special case only
           if (!isAuthenticated || isDefaultUser) {
             visible =
@@ -1127,6 +1143,24 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               layerName.toLocaleLowerCase().includes('ke_town_regionhq');
             if (visible) {
               minZoom = null;
+            }
+          }
+
+          // Show towns in jurisdiction area for any authenticated user
+          if (isAuthenticated) {
+            visible = layerName.toLocaleLowerCase().includes('town');
+
+            if (layerName.toLocaleLowerCase().includes('ke_town_regionhq')) {
+              minZoom = 8;
+            }
+            if (layerName.toLocaleLowerCase().includes('ke_town_disthq')) {
+              minZoom = 9;
+            }
+            if (layerName.toLocaleLowerCase().includes('ke_town_divhq')) {
+              minZoom = 10;
+            }
+            if (layerName.toLocaleLowerCase().includes('ke_town_other')) {
+              minZoom = 11;
             }
           }
 
@@ -1143,6 +1177,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
             const opacity = layerName.toLocaleLowerCase().includes('road')
               ? 0.5
               : null;
+
             const params = {
               LAYERS: layerName,
               Tiled: true
@@ -1163,6 +1198,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               ) {
                 areaType = userAreaObject.type;
               }
+
               const filterString = `strToLowerCase (${areaType}) like '${areaName}%'`;
               params.CQL_FILTER = filterString;
             }
@@ -1262,8 +1298,11 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
         setInstallationContent([installationLayerItems]);
       }
 
+      /**
+       * User specific data
+       */
       if (groupTitle.toLocaleLowerCase().includes('my data')) {
-        /* ================================ Installations ====================================== */
+        /* ======================== User specific data =================== */
         const myDataItems = [];
         const myDataLayers = [];
 
@@ -1670,10 +1709,13 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
   // Layers to be displayed on map
   const mapLayers = [
     ...adminLayers,
-    ...installationLayers,
+    // ...installationLayers,
+    ...filteredInstallationLayers,
     ...myDataLayers,
     jurisdictionLayer
   ];
+
+  console.log({ filteredInstallationLayers, installationLayers });
 
   return (
     <div className={classes.container} id="map-theme">
@@ -1685,7 +1727,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
       </div>
 
       {/** Map Layers -  not shown on UI, layers get added to global 'map'
-        object when this component mounts Logic in <layers></layers> wrapper
+        object when this component mounts.
         */}
       <Layers>{mapLayers}</Layers>
 
@@ -1695,6 +1737,10 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
       <Interactions>{interactions}</Interactions>
 
       <SideDrawer>
+        {isAuthenticated && (
+          <input placeholder="Search installations" onChange={handleSearch} />
+        )}
+
         {/** Layers Section - components for controling layer visibility  */}
         {isAuthenticated && !isDefaultUser && (
           <List>

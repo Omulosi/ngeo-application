@@ -244,10 +244,7 @@ const AddArea = ({ user, assigner, project, disabled }) => {
   const isRM = isRegionalManager(user?.role);
   /* Get roles of currently logged in user */
   const isHR = isUserHR(loggedInUser?.attributes.role);
-  const isSessionCM = isCountyManager(loggedInUser?.attributes.role);
   const isFinance = isFinanceOfficer(loggedInUser?.attributes.role);
-  // Get county manager info
-  const { data: countyManager } = useCountyManager();
 
   const error = useSelector((state) => state.area.areaError, shallowEqual);
 
@@ -395,6 +392,7 @@ const AddArea = ({ user, assigner, project, disabled }) => {
                   onChange={(e, value) => {
                     handleChange(e, value, 'region');
                   }}
+                  disabled={disabled}
                 />
               </Grid>
             )}

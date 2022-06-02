@@ -1,14 +1,14 @@
+/* eslint-disable prefer-destructuring */
+/* eslint-disable react/prop-types */
+/* eslint-disable operator-linebreak */
 import React from 'react';
-/* eslint-disable */
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { GeoJSON } from 'ol/format';
-import { transform } from 'ol/proj';
-import { fromLonLat } from 'ol/proj';
+import { transform, fromLonLat } from 'ol/proj';
 import shortid from 'shortid';
 import mainConfig from 'src/config/config.json';
-
-// POPUP STYLES
-import AccordionItem from './PopupAccordion';
+import { useProject } from 'src/fetch/projects';
+import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import {
   capitalize,
   Divider,
@@ -18,8 +18,7 @@ import {
   ListItemIcon,
   Tooltip
 } from '@material-ui/core';
-import ZoomInIcon from '@material-ui/icons/ZoomIn';
-import { useProject } from 'src/fetch/projects';
+import AccordionItem from './PopupAccordion';
 
 const queryClient = new QueryClient();
 
@@ -31,27 +30,32 @@ export function getConfigValue(key) {
 // MOBILE VIEW
 export function isMobile() {
   if (window.innerWidth < 770) return true;
-  else return false;
+  return false;
+}
+
+export function scaleToResolution(scale) {
+  const DOTS_PER_INCH = 96;
+  const INCHES_PER_METER = 39.37;
+  const pointResolution =
+    parseFloat(scale) / (DOTS_PER_INCH * INCHES_PER_METER);
+  const projection = window.map.getView().getProjection();
+  return pointResolution / projection.getMetersPerUnit();
 }
 
 export function zoomToFeature(feature, animate = true) {
-  let geom = feature.getGeometry();
-  let duration = animate ? 1000 : 0;
+  const geom = feature.getGeometry();
+  const duration = animate ? 1000 : 0;
   let minResolution = scaleToResolution(feature.minScale);
   minResolution = minResolution > 1 ? Math.ceil(minResolution) : 1;
   if (geom.getType() === 'Point') {
-    window.map
-      .getView()
-      .fit(geom, { duration: duration, minResolution: minResolution });
+    window.map.getView().fit(geom, { duration, minResolution });
   } else if (geom.getType() === 'GeometryCollection') {
     window.map.getView().fit(geom.getGeometries()[0], {
-      duration: duration,
-      minResolution: minResolution
+      duration,
+      minResolution
     });
   } else {
-    window.map
-      .getView()
-      .fit(geom, { duration: duration, minResolution: minResolution });
+    window.map.getView().fit(geom, { duration, minResolution });
   }
 }
 
@@ -69,6 +73,14 @@ export function saveToStorage(storageKey, item) {
   localStorage.setItem(storageKey, JSON.stringify(item));
 }
 
+export function getItemsFromStorage(key) {
+  const storage = localStorage.getItem(key);
+  if (storage === null) return undefined;
+
+  const data = JSON.parse(storage);
+  return data;
+}
+
 export function appendToStorage(storageKey, item, limit = undefined) {
   let items = getItemsFromStorage(storageKey);
   if (items === undefined) items = [];
@@ -79,14 +91,6 @@ export function appendToStorage(storageKey, item, limit = undefined) {
   }
 
   localStorage.setItem(storageKey, JSON.stringify(items));
-}
-
-export function getItemsFromStorage(key) {
-  const storage = localStorage.getItem(key);
-  if (storage === null) return undefined;
-
-  const data = JSON.parse(storage);
-  return data;
 }
 
 export function featureToGeoJson(feature) {
@@ -100,13 +104,13 @@ export function featureToGeoJson(feature) {
 }
 
 export function toLatLongFromWebMercator(coords) {
-  //coords: array
+  // coords: array
   return transform(coords, 'EPSG:3857', 'EPSG:4326');
 }
 
 export function toWebMercatorFromLatLong(coords) {
   return fromLonLat(coords);
-  //return transform(coords, "EPSG:4326", "EPSG:3857");
+  // return transform(coords, "EPSG:4326", "EPSG:3857");
 }
 
 export function getGeoJSONFromGeometry(geometry) {
@@ -132,21 +136,21 @@ function FeaturePopupContent(props) {
   const { navigate, feature } = props;
 
   let projectDetail = null;
-  let ftProperties = feature.getProperties();
-  let properties = {};
+  const ftProperties = feature.getProperties();
+  const properties = {};
 
   // convert all keys to lower case
   Object.keys(ftProperties).forEach((key) => {
     if (key.toLocaleLowerCase() === 'name') {
       // Convert all 'name' keys to lower case
       // Makes it easier to extract the name field later
-      properties['name'] = ftProperties[key];
+      properties.name = ftProperties[key];
     } else {
       properties[key] = ftProperties[key];
     }
   });
 
-  let startInfo = { name: '' };
+  const startInfo = { name: '' };
 
   if (properties.name) {
     startInfo.value = properties.name;
@@ -155,7 +159,7 @@ function FeaturePopupContent(props) {
 
   let id = null;
   id = feature.getId();
-  if (id && isNaN(id)) {
+  if (id && Number.isNaN(id)) {
     id = id.split('.')[1];
   }
 
@@ -185,40 +189,17 @@ function FeaturePopupContent(props) {
   }
 
   if (projectDetail && properties.theme) {
-    properties['Agents'] = projectDetail.agent
-      .map((ag) => ag.id_number)
-      .join(',');
+    properties.Agents = projectDetail.agent.map((ag) => ag.id_number).join(',');
 
     // Get theme name instead of ID
-
-    properties['theme'] = properties.theme;
+    // properties['theme'] = properties.theme;
   }
 
   if (projectDetail && properties.area_id) {
-    properties['County'] = projectDetail.area && projectDetail.area.county;
+    properties.County = projectDetail.area && projectDetail.area.county;
   }
 
-  let excludeFields = [
-    'latitude',
-    'longitude',
-    'description',
-    'date_added',
-    'area_id',
-    'county_manager_id',
-    'field_officer_id',
-    'County Manager',
-    'Field Officer',
-    'Agents',
-    'geometry',
-    // Project fields
-    'agent',
-    'terms',
-    'area', // complex object, won't display
-    'initiated_by',
-    'agent_status'
-  ];
-
-  let includeFields = ['name', 'theme', 'county', 'region', 'initiated_by'];
+  const includeFields = ['name', 'theme', 'county', 'region', 'initiated_by'];
 
   let resourceName = null;
   let resourceId = null;
@@ -243,12 +224,13 @@ function FeaturePopupContent(props) {
           button
           component="a"
           key={getUID()}
-          onClick={(e) => {
+          onClick={() => {
             if (resourceName) {
               return navigate(`/app/${resourceName}/${resourceId}`, {
                 replace: true
               });
             }
+            return null;
           }}
         >
           <ListItemText
@@ -260,7 +242,7 @@ function FeaturePopupContent(props) {
           />
         </ListItem>
         <Divider />
-        <AccordionItem title={'More Info'}>
+        <AccordionItem title="More Info">
           {Object.entries(properties).map((row) => {
             // ignore geometry field or any field starting with underscore
             if (
@@ -279,16 +261,14 @@ function FeaturePopupContent(props) {
                 </ListItem>
               );
             }
-            {
-              /**   */
-            }
+
             if (row[0].includes('County Manager')) {
               return (
                 <ListItem
                   key={getUID()}
-                  onClick={() =>
-                    navigate(`/app/county_managers`, { replace: true })
-                  }
+                  onClick={() => {
+                    navigate('/app/county_managers', { replace: true });
+                  }}
                   style={{ cursor: 'pointer' }}
                 >
                   <Tooltip
@@ -308,9 +288,9 @@ function FeaturePopupContent(props) {
               return (
                 <ListItem
                   key={getUID()}
-                  onClick={() =>
-                    navigate(`/app/field_officers`, { replace: true })
-                  }
+                  onClick={() => {
+                    navigate('/app/field_officers', { replace: true });
+                  }}
                   style={{ cursor: 'pointer' }}
                 >
                   <Tooltip
@@ -330,7 +310,7 @@ function FeaturePopupContent(props) {
               return (
                 <ListItem
                   key={getUID()}
-                  onClick={() => navigate(`/app/agents`, { replace: true })}
+                  onClick={() => navigate('/app/agents', { replace: true })}
                   style={{ cursor: 'pointer' }}
                 >
                   <Tooltip title="Click to view agents" placement="right">
@@ -341,7 +321,8 @@ function FeaturePopupContent(props) {
                   </Tooltip>
                 </ListItem>
               );
-            } else return null;
+            }
+            return null;
           })}
           <Divider />
           <ListItem

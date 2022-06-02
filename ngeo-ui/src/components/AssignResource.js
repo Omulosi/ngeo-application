@@ -39,7 +39,8 @@ const AssignResource = ({
   data, // What is being assigned
   action,
   setRole,
-  disabled
+  disabled,
+  setAssignAreaDisabled
 }) => {
   const [value, setValue] = React.useState(null);
 
@@ -92,6 +93,7 @@ const AssignResource = ({
                 setValue={setValue}
                 groupBy={(option) => option.county}
                 disabled={disabled}
+                setAssignAreaDisabled={setAssignAreaDisabled}
               />
             </Grid>
           </Grid>

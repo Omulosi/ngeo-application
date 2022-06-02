@@ -18,10 +18,7 @@ const useAgentStatistics = ({ agentList, role, userArea }) => {
 
     if (isRegionalManager(role)) {
       agents = agentList.filter(
-        (agent) =>
-          agent.attributes.area &&
-          agent.attributes.area.region &&
-          agent.attributes.area.region === userArea
+        (agent) => agent?.attributes?.area?.region === userArea
       );
     }
     setAgentStatistics((stats) => ({

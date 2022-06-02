@@ -9,7 +9,6 @@ import {
   Tab
 } from '@material-ui/core';
 import PropTypes from 'prop-types';
-import { useSnackbar } from 'notistack';
 import moment from 'moment';
 import JSON5 from 'json5';
 import Page from 'src/components/Page';
@@ -17,7 +16,6 @@ import TabPanel from 'src/components/TabPanel';
 import LineProgress from 'src/components/LineProgress';
 import DataGridToolbar from 'src/components/DataGridToolbar';
 import BadgeComponent from 'src/components/Badge';
-// import useUser from 'src/data';
 import useUser from 'src/fetch/user';
 import useNotifications from 'src/fetch/notifications';
 import AgentNotification from './AgentNotification';
@@ -71,11 +69,12 @@ const MyActivity = () => {
   let notifications = [];
   let agentNotifications = [];
   let projectNotifications = [];
+
   if (notificationsSuccess) {
     notifications = notificationList.map((notification) => ({
       message: notification.attributes.verb,
       createdAt: moment(notification.attributes.timestamp).fromNow(),
-      data: JSON5.parse(notification.attributes.data),
+      data: JSON5.parse(notification?.attributes?.data ?? {}),
       unread: notification.attributes.unread,
       id: notification.id,
       sender: notification.attributes.actor_object_id,
@@ -84,8 +83,6 @@ const MyActivity = () => {
 
     agentNotifications = notifications.filter((n) => Boolean(n.data?.agent));
 
-    console.log({ notifications });
-
     projectNotifications = notifications.filter((n) =>
       Boolean(n.data?.project_id)
     );
@@ -93,12 +90,9 @@ const MyActivity = () => {
 
   const { data, isLoading: userLoading, isSuccess } = useUser();
 
-  let user = {};
-  if (isSuccess) {
-    user = data.attributes;
-  }
+  const user = data?.attributes || {};
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (_, newValue) => {
     setValue(newValue);
   };
 

@@ -57,6 +57,7 @@ const UserProfile = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { id } = useParams();
   const [value, setValue] = React.useState(0);
+  const [assignAreaDisabled, setAssignAreaDisabled] = React.useState(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -65,6 +66,7 @@ const UserProfile = () => {
   const isHR = useHR();
 
   const { data: user, isLoading, error, isSuccess } = useUserById(id);
+
   if (error) {
     enqueueSnackbar('Unable to fetch user in HR module', {
       variant: 'error'
@@ -114,7 +116,10 @@ const UserProfile = () => {
             </Grid>
             {isHR && (
               <Grid item xl={6} lg={6} md={6} xs={12}>
-                <AssignRole user={details} />
+                <AssignRole
+                  user={details}
+                  setAssignAreaDisabled={setAssignAreaDisabled}
+                />
               </Grid>
             )}
 
@@ -123,7 +128,10 @@ const UserProfile = () => {
                 role
               ) && (
                 <Grid item xl={6} lg={6} md={6} xs={12}>
-                  <AssignArea user={details} />
+                  <AssignArea
+                    user={details}
+                    disabled={!details?.is_active || assignAreaDisabled}
+                  />
                 </Grid>
               )}
 

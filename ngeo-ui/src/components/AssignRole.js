@@ -7,7 +7,7 @@ import useUser from 'src/fetch/user';
 import { useAssignRole } from 'src/fetch/user';
 
 /* eslint-disable */
-const AssignRole = ({ user, setRole }) => {
+const AssignRole = ({ user, setRole, setAssignAreaDisabled }) => {
   const { data: authUser } = useUser();
   const assignRole = useAssignRole();
   let roleList = Object.entries(roleNames).map(([key, value]) => {
@@ -29,6 +29,8 @@ const AssignRole = ({ user, setRole }) => {
       data={user}
       action={assignRole}
       setRole={setRole}
+      setAssignAreaDisabled={setAssignAreaDisabled}
+      disabled={!user?.is_active}
     />
   );
 };

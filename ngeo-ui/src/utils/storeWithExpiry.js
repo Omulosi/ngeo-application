@@ -1,6 +1,9 @@
 // Implements expiry times for items stored in local storage
 /* eslint-disable */
-export function setWithExpiry(key, value, ttl) {
+
+const minute = 1000 * 60;
+
+export function setWithExpiry(key, value, ttl = 2 * 60 * minute) {
   const now = new Date();
 
   // `item` is an object which contains the original value
