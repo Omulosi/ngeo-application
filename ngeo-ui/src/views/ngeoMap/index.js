@@ -8,11 +8,14 @@ import useLayerGroupAndCapabilityData from 'src/hooks/useLayerGroupAndCapability
  * Loads layers information from geoserver
  */
 const Map = () => {
-  const { layers, capabilities } = useLayerGroupAndCapabilityData();
+  const {
+    layers: layerGroups,
+    capabilities
+  } = useLayerGroupAndCapabilityData();
 
   return (
     <Page title="Map">
-      <NgeoMap layers={layers} capabilities={capabilities} />
+      <NgeoMap layers={layerGroups} capabilities={capabilities} />
     </Page>
   );
 };

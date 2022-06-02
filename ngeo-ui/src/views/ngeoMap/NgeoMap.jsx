@@ -483,12 +483,12 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
   }, [jurisdictionURL, showJurisdiction]);
 
   React.useEffect(() => {
-    if (!layers) {
+    if (!layers?.length) {
       return;
     }
 
-    // Object representing user area
-    const userAreaObject = { name: '', type: '', url: '', names: [] };
+    // Object representing user specific attributes
+    let userAreaObject = { name: '', type: '', url: '', names: [] };
 
     layers.forEach((layer) => {
       const groupTitle = layer.layerGroup.title;
@@ -498,8 +498,8 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
 
       // One group layer comes as an object, not an array.
       // This makes it into an array that's amenable to be looped
-      // over, makes sure loop logic below wont be changed for this
-      // special case.
+      // over, makes sure loop logic below wont be changed for the
+      // special case of a single object.
       if (!Array.isArray(groupLayers)) {
         groupLayers = [groupLayers];
       }
@@ -534,8 +534,11 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
           let zIndex = 0;
           let userArea = null;
           let adminLayer = null;
-          let url = null;
+          // // URL for filtering for user specific features
+          // let url = null;
+
           // params for WMS Image layers
+          // all admin boundaries are displayed unfiltered
           const params = {
             LAYERS: layerName,
             Tiled: false
@@ -654,22 +657,29 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
             default:
           }
 
-          // get user's areas and update visibility variable
+          // For authenticated users, set appropriate attributes for the global userAreaObject
+          // The global userAreaObject is used to set and later access user specific data needed
+          // for filtering features within a specific user's area.
           if (isAuthenticated) {
             // Get user Area description
             if (userData.role && userData.role === roles.RM) {
               if (layerName.toLocaleLowerCase().includes('ke_region')) {
-                userArea = userData.area.region;
-                userArea = userArea && userArea.toLocaleLowerCase();
-                const areaFilter = `strToLowerCase (REGION) like '${userArea}'`;
-                url = createFilterFeatureQuery(layerName, areaFilter);
+                userArea = userData?.area?.region;
+                userArea = userArea?.toLocaleLowerCase();
+                const areaFilter = `strToLowerCase (REGION) like '${userArea}%'`;
 
+                // URL for filtering for user specific features
+                let url = createFilterFeatureQuery(layerName, areaFilter);
+                url = encodeURI(url);
                 // Update global user area object
-                userAreaObject.type = 'REGION';
-                userAreaObject.name = userArea;
-                userAreaObject.layerName = layerName;
-                userAreaObject.url = url;
-                userAreaObject.areaFilter = areaFilter;
+                userAreaObject = {
+                  ...userAreaObject,
+                  type: 'REGION',
+                  name: userArea,
+                  layerName,
+                  url,
+                  areaFilter
+                };
               }
             }
 
@@ -684,17 +694,19 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                   userArea = 'Nairobi';
                 }
                 userArea = userArea && userArea.toLocaleLowerCase();
-                const areaFilter = `strToLowerCase (COUNTY) like '${userArea}'`;
-                url = createFilterFeatureQuery(layerName, areaFilter);
+                const areaFilter = `strToLowerCase (COUNTY) like '${userArea}%'`;
+                let url = createFilterFeatureQuery(layerName, areaFilter);
+                url = encodeURI(url);
 
                 // Update user area object
-                userAreaObject.type = 'COUNTY';
-                userAreaObject.name = userArea;
-
-                // set this user's county in global user area object
-                userAreaObject.layerName = layerName;
-                userAreaObject.url = url;
-                userAreaObject.areaFilter = areaFilter;
+                userAreaObject = {
+                  ...userAreaObject,
+                  type: 'COUNTY',
+                  name: userArea,
+                  layerName,
+                  url,
+                  areaFilter
+                };
               }
             }
 
@@ -714,7 +726,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               }
 
               // set this user's county in global user object
-              userAreaObject.county = county ? county.toLocaleLowerCase() : '';
+              userAreaObject.county = county?.toLocaleLowerCase() ?? '';
 
               if (
                 !constituency?.length &&
@@ -729,13 +741,17 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                 ) {
                   userArea = county;
                   userArea = userArea && userArea.toLocaleLowerCase();
-                  const areaFilter = `strToLowerCase (COUNTY) like '${userArea}'`;
-                  url = createFilterFeatureQuery(layerName, areaFilter);
-                  userAreaObject.type = 'COUNTY';
-                  userAreaObject.name = userArea;
-                  userAreaObject.layerName = layerName;
-                  userAreaObject.url = url;
-                  userAreaObject.areaFilter = areaFilter;
+                  const areaFilter = `strToLowerCase (COUNTY) like '${userArea}%'`;
+                  let url = createFilterFeatureQuery(layerName, areaFilter);
+                  url = encodeURI(url);
+                  userAreaObject = {
+                    ...userAreaObject,
+                    type: 'COUNTY',
+                    name: userArea,
+                    layerName,
+                    url,
+                    areaFilter
+                  };
                 }
               }
 
@@ -746,13 +762,18 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               ) {
                 userArea = constituency[0];
                 userArea = userArea && userArea.toLocaleLowerCase();
-                const areaFilter = `strToLowerCase (CONSTITUEN) like '${userArea}'`;
-                url = createFilterFeatureQuery(layerName, areaFilter);
-                userAreaObject.type = 'CONSTITUEN';
-                userAreaObject.name = userArea;
-                userAreaObject.layerName = layerName;
-                userAreaObject.url = url;
-                userAreaObject.areaFilter = areaFilter;
+                const areaFilter = `strToLowerCase (CONSTITUEN) like '${userArea}%'`;
+                let url = createFilterFeatureQuery(layerName, areaFilter);
+                url = encodeURI(url);
+
+                userAreaObject = {
+                  ...userAreaObject,
+                  type: 'CONSTITUEN',
+                  name: userArea,
+                  layerName,
+                  url,
+                  areaFilter
+                };
               }
 
               if (
@@ -762,22 +783,29 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               ) {
                 userArea = subCounty[0];
                 const userAreas = subCounty;
-                userArea = userArea && userArea.toLocaleLowerCase();
+                userArea = userArea?.toLocaleLowerCase() ?? '';
+
                 let areaFilter = [];
+                const names = [];
                 userAreas.forEach((area) => {
                   area = area.toLocaleLowerCase();
-                  const filterStr = `strToLowerCase (SUB_COUN) like '${area}'`;
+                  const filterStr = `strToLowerCase (SUB_COUN) like '${area}%'`;
                   areaFilter.push(filterStr);
+                  names.push(area);
                 });
-
                 areaFilter = areaFilter.join(' or ');
-                // const areaFilter = `strToLowerCase (SUB_COUN) like '${userArea}'`;
-                url = createFilterFeatureQuery(layerName, areaFilter);
-                userAreaObject.type = 'SUB_COUN';
-                userAreaObject.name = userArea;
-                userAreaObject.layerName = layerName;
-                userAreaObject.url = url;
-                userAreaObject.areaFilter = areaFilter;
+                let url = createFilterFeatureQuery(layerName, areaFilter);
+                url = encodeURI(url);
+
+                userAreaObject = {
+                  ...userAreaObject,
+                  type: 'SUB_COUN',
+                  name: userArea,
+                  layerName,
+                  url,
+                  areaFilter,
+                  names
+                };
               }
 
               if (
@@ -786,15 +814,28 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                 layerName.toLocaleLowerCase().includes('ke_division')
               ) {
                 userArea = division[0];
+                const userAreas = division;
                 userArea = userArea && userArea.toLocaleLowerCase();
-                const areaFilter = `strToLowerCase (DIVISION) like '${userArea}'`;
-                url = createFilterFeatureQuery(layerName, areaFilter);
 
-                userAreaObject.type = 'DIVISION';
-                userAreaObject.name = userArea;
-                userAreaObject.layerName = layerName;
-                userAreaObject.url = url;
-                userAreaObject.areaFilter = areaFilter;
+                let areaFilter = [];
+                userAreas.forEach((area) => {
+                  area = area.toLocaleLowerCase();
+                  const filterStr = `strToLowerCase (DIVISION) like '${area}%'`;
+                  areaFilter.push(filterStr);
+                });
+
+                areaFilter = areaFilter.join(' or ');
+                let url = createFilterFeatureQuery(layerName, areaFilter);
+                url = encodeURI(url);
+
+                userAreaObject = {
+                  ...userAreaObject,
+                  type: 'DIVISION',
+                  name: userArea,
+                  layerName,
+                  url,
+                  areaFilter
+                };
               }
 
               if (
@@ -803,15 +844,28 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                 layerName.toLocaleLowerCase().includes('ke_location')
               ) {
                 userArea = location[0];
-                userArea = userArea && userArea.toLocaleLowerCase();
-                const areaFilter = `strToLowerCase (LOCATION) like '${userArea}'`;
+                const userAreas = location;
+                userArea = userArea?.toLocaleLowerCase();
 
-                url = createFilterFeatureQuery(layerName, areaFilter);
-                userAreaObject.type = 'LOCATION';
-                userAreaObject.name = userArea;
-                userAreaObject.layerName = layerName;
-                userAreaObject.url = url;
-                userAreaObject.areaFilter = areaFilter;
+                let areaFilter = [];
+                userAreas.forEach((area) => {
+                  area = area.toLocaleLowerCase();
+                  const filterStr = `strToLowerCase (LOCATION) like '${area}%'`;
+                  areaFilter.push(filterStr);
+                });
+
+                areaFilter = areaFilter.join(' or ');
+                let url = createFilterFeatureQuery(layerName, areaFilter);
+                url = encodeURI(url);
+
+                userAreaObject = {
+                  ...userAreaObject,
+                  type: 'LOCATION',
+                  name: userArea,
+                  layerName,
+                  url,
+                  areaFilter
+                };
               }
 
               if (
@@ -820,15 +874,28 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                 layerName.toLocaleLowerCase().includes('ke_sub_location')
               ) {
                 userArea = subLocation[0];
+                const userAreas = subLocation;
                 userArea = userArea && userArea.toLocaleLowerCase();
-                const areaFilter = `strToLowerCase (SUB_LOCATI) like '${userArea}'`;
-                url = createFilterFeatureQuery(layerName, areaFilter);
 
-                userAreaObject.type = 'SUB_LOCATI';
-                userAreaObject.name = userArea;
-                userAreaObject.layerName = layerName;
-                userAreaObject.url = url;
-                userAreaObject.areaFilter = areaFilter;
+                let areaFilter = [];
+                userAreas.forEach((area) => {
+                  area = area.toLocaleLowerCase();
+                  const filterStr = `strToLowerCase (LOCATION) like '${area}%'`;
+                  areaFilter.push(filterStr);
+                });
+
+                areaFilter = areaFilter.join(' or ');
+                let url = createFilterFeatureQuery(layerName, areaFilter);
+                url = encodeURI(url);
+
+                userAreaObject = {
+                  ...userAreaObject,
+                  type: 'SUB_LOCATI',
+                  name: userArea,
+                  layerName,
+                  url,
+                  areaFilter
+                };
               }
             }
           }
@@ -889,25 +956,6 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
           const layerName = layer.name.split(':')[1];
           const capability = capabilities.filter((c) => c.name === layer.name);
 
-          // Url for all features
-          let url = createGetFeatureQuery(layerName);
-          // url for area specific features
-          if (userAreaObject.name) {
-            const areaName = userAreaObject.name.substring(0, 6);
-            let areaType = `${userAreaObject.type}_1`;
-            if (
-              userAreaObject.type.toLocaleLowerCase().includes('sub_') ||
-              userAreaObject.type.toLocaleLowerCase().includes('constituen')
-            ) {
-              areaType = userAreaObject.type;
-            }
-            url = createFilterFeatureQuery(
-              layerName,
-              `strToLowerCase (${areaType}) like '${areaName}%'`
-            );
-            url = encodeURI(url);
-          }
-
           let installationLayer = null;
           // input checkbox variable
           let title = '';
@@ -922,6 +970,51 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
           let hide = false;
           zIndex = zIndex + index;
           let iconSrc = '';
+
+          // For loading WMS layers
+          const params = {
+            LAYERS: layerName,
+            Tiled: true
+          };
+
+          // URL for loading vector layers
+          let url = createGetFeatureQuery(layerName);
+
+          // url for area specific features
+          if (userAreaObject?.name) {
+            const { areaFilter: filterString } = userAreaObject;
+            // Filter for user specific data in WMS layers
+            params.CQL_FILTER = filterString;
+
+            const areaName = userAreaObject.name.substring(0, 6);
+            let areaType = `${userAreaObject.type}_1`;
+            if (
+              userAreaObject.type.toLocaleLowerCase().includes('sub_') ||
+              userAreaObject.type.toLocaleLowerCase().includes('constituen')
+            ) {
+              areaType = userAreaObject.type;
+            }
+
+            let filterURL = `strToLowerCase (${areaType}) like '${areaName}%'`;
+
+            const { names } = userAreaObject;
+
+            if (names?.length) {
+              const urlFilter = [];
+              names.forEach((name) => {
+                let area = name.substring(0, 6);
+                area = area.toLocaleLowerCase();
+                const filterStr = `strToLowerCase (SUB_COUN) like '${area}%'`;
+                urlFilter.push(filterStr);
+              });
+              filterURL = urlFilter.join(' or ');
+            }
+
+            url = createFilterFeatureQuery(layerName, filterURL);
+            url = encodeURI(url);
+
+            console.log({ url });
+          }
 
           if (capability && capability.length > 0) {
             [{ title, extentCRS }] = capability;
@@ -1168,7 +1261,8 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
           isVisible = isVisible || isFinance || isCEO || !isAuthenticated;
 
           /* =============== Create installation layers =================== */
-          // Load towns as WMS layer
+
+          // Load towns, roads and lakes as WMS layers
           if (
             layerName.toLocaleLowerCase().includes('town') ||
             layerName.toLocaleLowerCase().includes('lakes') ||
@@ -1177,31 +1271,6 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
             const opacity = layerName.toLocaleLowerCase().includes('road')
               ? 0.5
               : null;
-
-            const params = {
-              LAYERS: layerName,
-              Tiled: true
-            };
-            // Filter data for this area only
-            // if (userAreaObject.name) {
-            //   let areaName = userAreaObject.name.substring(0, 6);
-            //   let filterString = `strToLowerCase (${userAreaObject.type}) like '${areaName}%'`;
-            //   params.CQL_FILTER = filterString;
-            // }
-
-            if (userAreaObject?.name) {
-              const areaName = userAreaObject.name.substring(0, 6);
-              let areaType = `${userAreaObject.type}_1`;
-              if (
-                userAreaObject.type.toLocaleLowerCase().includes('sub_') ||
-                userAreaObject.type.toLocaleLowerCase().includes('constituen')
-              ) {
-                areaType = userAreaObject.type;
-              }
-
-              const filterString = `strToLowerCase (${areaType}) like '${areaName}%'`;
-              params.CQL_FILTER = filterString;
-            }
 
             installationLayer = (
               <TileLayer
@@ -1221,7 +1290,9 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               />
             );
           } else {
-            // load everything else as vector layer
+            // Load everything else as vector layer
+            // This allows them to be clickable
+
             installationLayer = (
               <VectorLayer
                 key={helpers.getUID()}
@@ -1248,7 +1319,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               'ke_class_b_road',
               'ke_class_c_road',
               'ke_class_d_road'
-            ].includes(layerName.toLocaleLowerCase()) // Remove these from the side bar
+            ].includes(layerName.toLocaleLowerCase()) // Exclude these from the side bar
           ) {
             // check box input item to control visibility of associated layer
             installationItem = (
@@ -1308,7 +1379,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
 
         let jurisdictionURL = '';
         if (userAreaObject.name) {
-          jurisdictionURL = userAreaObject.url;
+          jurisdictionURL = userAreaObject?.url;
           setJurisdictionURL(jurisdictionURL);
           // get layername of jurisdiction
           // get cql filter for the jurisdiction
