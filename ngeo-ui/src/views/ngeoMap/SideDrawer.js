@@ -72,6 +72,7 @@ const SideDrawer = ({ drawerContent, userData, state }) => {
               component="li"
               style={{ backgroundColor: 'rgb(238,238,238)' }}
             />
+
             <div className={classes.innerContent}>{drawerContent}</div>
           </AccordionItem>
         </List>

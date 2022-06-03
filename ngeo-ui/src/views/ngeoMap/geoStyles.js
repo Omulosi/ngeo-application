@@ -39,6 +39,32 @@ export const icons = {
   powerStation: images['power-station.png'].default
 };
 
+export const filterStyleFunction = (query, style) => (feature) => {
+  let name =
+    feature.get('Name')?.toLocaleLowerCase() ||
+    feature.get('NAME')?.toLocaleLowerCase() ||
+    feature.get('name')?.toLocaleLowerCase();
+
+  // Default style - show everything visible
+  let featureStyle = style;
+  if (typeof style === 'function') {
+    featureStyle = style(feature);
+  }
+
+  if (query) {
+    // display only items with names matching query
+    if (!name?.includes(query?.toLocaleLowerCase())) {
+      featureStyle = new Style({});
+    }
+  }
+
+  if (Array.isArray(featureStyle)) {
+    return [...featureStyle];
+  }
+
+  return [featureStyle];
+};
+
 const styles = {
   // ================= Generic Styles
   generalStyle: new Style({
@@ -369,7 +395,10 @@ const styles = {
       lineDash: [8, 1, 3, 1, 3, 1, 3, 1]
     })
   }),
-  // Installations
+
+  /**
+   * ******************** Installations
+   */
 
   // Schools
   PrimarySchool: new Style({
@@ -415,12 +444,40 @@ const styles = {
       src: images['school.png'].default
     })
   }),
-  // Hospitals
+
   HospitalPoint: new Style({
     image: new Icon({
       src: images['hospital_icon.png'].default
     })
   }),
+
+  // Hospitals
+  hospitalStyleFunction: (query) => (feature) => {
+    let name = feature.get('Name')?.toLocaleLowerCase() ?? '';
+
+    // Default style - show everything visible
+    let image = new Style({
+      image: new Icon({
+        src: images['hospital_icon.png'].default
+      })
+    });
+
+    if (query) {
+      // display only items with names matching query
+      if (name?.includes(query?.toLocaleLowerCase())) {
+        image = new Style({
+          image: new Icon({
+            src: images['hospital_icon.png'].default
+          })
+        });
+      } else {
+        image = new Style({});
+      }
+    }
+
+    return [image];
+  },
+
   hospitalLoadFunction: (feature, resolution) => {
     const id = Number(feature.getId().split('.')[1]);
   },
@@ -535,6 +592,12 @@ const styles = {
     })
   }),
 
+  ForestPoint: new Style({
+    fill: new Fill({
+      color: 'rgba(112, 168, 0, 0.5)'
+    })
+  }),
+
   // Style functions
   textStyleFunction: (feature, resolution, key) => {
     return null;
@@ -568,7 +631,7 @@ const styles = {
     return [textStyle];
   },
 
-  forestStyleFunction: (feature, resolution) => {
+  forestStyleFunction: (feature) => {
     let name = feature.get('FOREST');
 
     name = `${name} Forest`;

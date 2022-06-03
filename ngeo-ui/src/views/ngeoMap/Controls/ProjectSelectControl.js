@@ -1,30 +1,23 @@
-/* eslint-disable */
+/* eslint-disable no-shadow */
+/* eslint-disable prefer-destructuring */
+/* eslint-disable consistent-return */
+/* eslint-disable prefer-arrow-callback */
+/* eslint-disable no-unused-vars */
 import React, { useContext, useEffect } from 'react';
 import OLSelectControl from 'ol-ext/control/SelectMulti';
 import SelectFulltext from 'ol-ext/control/SelectFulltext';
 import SelectPopup from 'ol-ext/control/SelectPopup';
-import SelectCheck from 'ol-ext/control/SelectCheck';
 import SelectCondition from 'ol-ext/control/SelectCondition';
-import MapContext from '../Map/MapContext';
+
 import VectorSource from 'ol/source/Vector';
 import 'ol-ext/dist/ol-ext.css';
 import './controls.css';
 import { axiosWithAuth } from 'src/utils/axios';
 import GeoJSON from 'ol/format/GeoJSON';
 import OLVectorLayer from 'ol/layer/Vector';
-import { Select } from 'ol/interaction';
-import { singleClick } from 'ol/events/condition';
-import {
-  Circle as CircleStyle,
-  Fill,
-  Stroke,
-  Style,
-  Icon,
-  RegularShape,
-  Text
-} from 'ol/style';
+
 import { agentTerms, queryCentreAttributes } from 'src/config';
-import mainConfig from 'src/config/config.json';
+import MapContext from '../Map/MapContext';
 import styles from '../geoStyles';
 
 // Todo: Update project titles to be configurable
@@ -55,10 +48,10 @@ const SelectControl = ({ source = new VectorSource() }) => {
       // into a primitive value.
       featuresArray = featuresArray.map((f) => {
         let filterProperties = {};
-        let theme = f.properties.theme;
+        const theme = f.properties.theme;
         filterProperties.theme = theme.name;
         filterProperties.theme_color = theme.color;
-        let agent = f.properties.agent;
+        const agent = f.properties.agent;
         if (agent && agent.length > 0) {
           filterProperties.agent_status = 'With Agents';
           agent.forEach((agent) => {
@@ -87,7 +80,7 @@ const SelectControl = ({ source = new VectorSource() }) => {
     }
 
     if (features.length > 0) {
-      // Create new layer with source containing
+      // Create new layer with source containing projects
       map.addLayer(
         new OLVectorLayer({
           name: 'Projects',

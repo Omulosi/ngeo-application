@@ -65,8 +65,7 @@ import {
 
 import SideDrawer from './SideDrawerWrapper';
 import Navigation from './Navigation/Navigation';
-import styles, { icons } from './geoStyles';
-import useFilteredData from '../../hooks/useFilteredData';
+import styles, { icons, filterStyleFunction } from './geoStyles';
 
 const useStyles = makeStyles({
   map: {
@@ -237,10 +236,12 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
   const [showJurisdiction, setShowJurisdiction] = useState(true);
   const [jurisdictionURL, setJurisdictionURL] = useState('');
 
-  const {
-    filteredData: filteredInstallationLayers,
-    handleSearch
-  } = useFilteredData(installationLayers);
+  // Filter installations
+  const [query, setQuery] = useState(null);
+
+  const handleSearchInstallations = (evt) => {
+    setQuery(evt.target.value);
+  };
 
   const toggleShowUserLayer = (layerName) => {
     switch (layerName.toLocaleLowerCase()) {
@@ -454,6 +455,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
 
   // Default user cannot view projects
   if (isAuthenticated && !isDefaultUser) {
+    // Loads projects features
     controls.push(<ProjectSelectControl key={helpers.getUID()} />);
   }
 
@@ -1012,8 +1014,6 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
 
             url = createFilterFeatureQuery(layerName, filterURL);
             url = encodeURI(url);
-
-            console.log({ url });
           }
 
           if (capability && capability.length > 0) {
@@ -1057,13 +1057,13 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               isVisible = showForestStation;
               minZoom = 10;
               iconSrc = icons.forestStation;
-              style = styles.ForestStation;
+              style = filterStyleFunction(query, styles.ForestStation);
               if (isVisible) {
                 minZoom = null;
               }
               break;
             case 'ke_nps':
-              style = styles.Police;
+              style = filterStyleFunction(query, styles.Police);
               isVisible = showNPS;
               minZoom = 14.5;
               iconSrc = icons.police;
@@ -1072,7 +1072,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               }
               break;
             case 'ke_ngao':
-              style = styles.Admin;
+              style = filterStyleFunction(query, styles.Admin);
               isVisible = showNgao;
               minZoom = 13.5;
               iconSrc = icons.admin;
@@ -1082,7 +1082,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               break;
             case 'ke_institute_of_technology':
               isVisible = showInstituteOfTechnology;
-              style = styles.InstituteOfTechnology;
+              style = filterStyleFunction(query, styles.InstituteOfTechnology);
               minZoom = 10;
               iconSrc = icons.instituteOfTechnology;
               if (isVisible) {
@@ -1092,7 +1092,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
             //
             case 'ke_gazetted_forest':
               isVisible = showForest;
-              style = styles.forestStyleFunction;
+              style = filterStyleFunction(query, styles.forestStyleFunction);
               hide = true;
               minZoom = 11;
               iconSrc = icons.forestStation;
@@ -1101,7 +1101,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               }
               break;
             case 'ke_safaricom_bts':
-              style = styles.BTS;
+              style = filterStyleFunction(query, styles.BTS);
               isVisible = showSafaricomBTS;
               minZoom = 16;
               iconSrc = icons.bTS;
@@ -1110,7 +1110,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               }
               break;
             case 'ke_telkom_bts':
-              style = styles.BTS;
+              style = filterStyleFunction(query, styles.BTS);
               isVisible = showTelkomBTS;
               minZoom = 14;
               iconSrc = icons.bTS;
@@ -1119,7 +1119,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               }
               break;
             case 'ke_polytechnic':
-              style = styles.Polytechnic;
+              style = filterStyleFunction(query, styles.Polytechnic);
               isVisible = showPolytechnic;
               iconSrc = icons.polytechnic;
               minZoom = 12;
@@ -1129,7 +1129,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               break;
             case 'ke_power_station':
               isVisible = showPowerStation;
-              style = styles.PowerStation;
+              style = filterStyleFunction(query, styles.PowerStation);
               iconSrc = icons.powerStation;
               minZoom = 12;
               if (isVisible) {
@@ -1138,7 +1138,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               break;
             case 'ke_primary_schools':
               isVisible = showPrimarySchool;
-              style = styles.PrimarySchool;
+              style = filterStyleFunction(query, styles.PrimarySchool);
               minZoom = 14.5;
               iconSrc = icons.primarySchool;
               if (isVisible) {
@@ -1146,7 +1146,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               }
               break;
             case 'ke_secondary_school':
-              style = styles.SecondarySchool;
+              style = filterStyleFunction(query, styles.SecondarySchool);
               isVisible = showSecondarySchool;
               minZoom = 12;
               iconSrc = icons.secondarySchool;
@@ -1155,7 +1155,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               }
               break;
             case 'ke_health_facility':
-              style = styles.HospitalPoint;
+              style = filterStyleFunction(query, styles.HospitalPoint);
               isVisible = showHealthCentres;
               minZoom = 13.5;
               iconSrc = icons.hospital;
@@ -1196,7 +1196,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               }
               break;
             case 'ke_university':
-              style = styles.University;
+              style = filterStyleFunction(query, styles.University);
               isVisible = showUniversity;
               minZoom = 9;
               iconSrc = icons.university;
@@ -1213,7 +1213,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
               }
               break;
             case 'ke_teachers_training_college':
-              style = styles.TTC;
+              style = filterStyleFunction(query, styles.TTC);
               isVisible = showKTTC;
               minZoom = 10;
               iconSrc = icons.ttc;
@@ -1307,6 +1307,7 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
                 zIndex={zIndex}
                 visible={visible}
                 isVisible={isVisible}
+                name={groupTitle}
               />
             );
           }
@@ -1767,7 +1768,9 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
     showUserSubCounty,
     showUserDivision,
     showUserLocation,
-    showUserSubLocation
+    showUserSubLocation,
+    // query
+    query
   ]);
 
   // Content to populate RHS side drawer on map
@@ -1780,13 +1783,11 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
   // Layers to be displayed on map
   const mapLayers = [
     ...adminLayers,
-    // ...installationLayers,
-    ...filteredInstallationLayers,
+    ...installationLayers,
+    // ...filteredInstallationLayers,
     ...myDataLayers,
     jurisdictionLayer
   ];
-
-  console.log({ filteredInstallationLayers, installationLayers });
 
   return (
     <div className={classes.container} id="map-theme">
@@ -1809,7 +1810,15 @@ const NgeoMap = ({ layers = [], capabilities = [] }) => {
 
       <SideDrawer>
         {isAuthenticated && (
-          <input placeholder="Search installations" onChange={handleSearch} />
+          <input
+            placeholder="Search installations"
+            onChange={handleSearchInstallations}
+            style={{
+              margin: '1em',
+              padding: '0.5em',
+              width: '90%'
+            }}
+          />
         )}
 
         {/** Layers Section - components for controling layer visibility  */}

@@ -79,6 +79,7 @@ const VectorLayer = ({
      */
     if (type === 'area') {
       const vectorSource = vectorLayer.getSource();
+
       vectorSource.once('change', function (e) {
         if (vectorSource.getState() === 'ready') {
           let extent = vectorSource.getExtent();
