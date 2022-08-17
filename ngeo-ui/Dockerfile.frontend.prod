@@ -17,6 +17,6 @@ FROM node:16.14-alpine
 
 WORKDIR /ngeo-ui
 
-COPY build/ /ngeo-ui/
+COPY ./build/ /ngeo-ui/
 
 RUN ls -l
