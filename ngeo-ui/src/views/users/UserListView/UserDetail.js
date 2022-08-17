@@ -6,7 +6,6 @@ import SuccessChip from 'src/components/SuccessChip';
 import capitalize from 'src/utils/capitalize';
 import FailureChip from 'src/components/FailureChip';
 import { roleNames as roles, roles as userRoles } from 'src/config';
-import { useLocation } from 'react-router-dom';
 
 /*eslint-disable */
 const UserDetail = ({ details }) => {
@@ -20,10 +19,6 @@ const UserDetail = ({ details }) => {
     role,
     area
   } = details;
-
-  const { state } = useLocation();
-
-  console.log({ details, state });
 
   let userArea = null;
   if (role == userRoles.RM) {

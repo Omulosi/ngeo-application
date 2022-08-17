@@ -34,6 +34,10 @@ RUN poetry config virtualenvs.create false \
 
 COPY api/ /api/
 
+COPY api/.env.prod /api/.env
+
+RUN ["cat", ".env"]
+
 COPY ./docker-entrypoint-api.sh /api/
 
 RUN ["chmod", "+x", "/api/docker-entrypoint-api.sh"]

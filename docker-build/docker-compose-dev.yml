@@ -49,19 +49,19 @@ services:
       test: "exit 0"
     network_mode: host
 
-  # nominatim:
-  #   container_name: ngeo_nominatim
-  #   image: mediagis/nominatim:3.7
-  #   restart: always
-  #   volumes:
-  #     - "../mapserver/data/kenya-latest.osm.pbf:/nominatim/data.osm.pbf"
-  #   ports:
-  #     - "9000:8080"
-  #   environment:
-  #     # see https://github.com/mediagis/nominatim-docker/tree/master/3.7#configuration for more options
-  #     PBF_URL: https://download.geofabrik.de/africa/kenya-latest.osm.pbf
-  #     REPLICATION_URL: https://download.geofabrik.de/africa/kenya-updates/
-  # shm_size: 1gb
+  nominatim:
+    container_name: ngeo_nominatim
+    image: mediagis/nominatim:3.7
+    restart: always
+    volumes:
+      - "../mapserver/data/kenya-latest.osm.pbf:/nominatim/data.osm.pbf"
+    ports:
+      - "9000:8080"
+    environment:
+      # see https://github.com/mediagis/nominatim-docker/tree/master/3.7#configuration for more options
+      PBF_URL: https://download.geofabrik.de/africa/kenya-latest.osm.pbf
+      REPLICATION_URL: https://download.geofabrik.de/africa/kenya-updates/
+    shm_size: 1gb
 
   # frontend:
   #   container_name: ngeo_frontend

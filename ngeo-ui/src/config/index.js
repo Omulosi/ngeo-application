@@ -1,4 +1,9 @@
-export const BACKEND_HOST = process.env.REACT_APP_API_HOST;
+// eslint-disable-next-line operator-linebreak
+export const BACKEND_HOST =
+  process.env.NODE_ENV === 'production'
+    ? process.env.REACT_APP_API_HOST_PROD
+    : process.env.REACT_APP_API_HOST;
+
 export const ENVIRONMENT = process.env.REACT_APP_ENVIRONMENT; // dev or prod
 
 const BASE_URL = `${BACKEND_HOST}/api/v1`;

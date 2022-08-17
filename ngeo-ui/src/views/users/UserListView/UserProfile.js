@@ -128,10 +128,7 @@ const UserProfile = () => {
                 role
               ) && (
                 <Grid item xl={6} lg={6} md={6} xs={12}>
-                  <AssignArea
-                    user={details}
-                    disabled={!details?.is_active || assignAreaDisabled}
-                  />
+                  <AssignArea user={details} disabled={!details?.is_active} />
                 </Grid>
               )}
 

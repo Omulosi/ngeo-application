@@ -13,7 +13,7 @@ const ComboBox = ({
   name,
   groupBy,
   disabled = false,
-  setAssignAreaDisabled
+  setAssignAreaDisabled = null
 }) => {
   return (
     <Autocomplete
@@ -22,7 +22,9 @@ const ComboBox = ({
       value={value}
       onChange={(evt, newValue) => {
         setValue(newValue);
-        setAssignAreaDisabled?.(newValue);
+        if (setAssignAreaDisabled) {
+          setAssignAreaDisabled(!!newValue);
+        }
       }}
       options={data}
       getOptionLabel={(option) => option.name}

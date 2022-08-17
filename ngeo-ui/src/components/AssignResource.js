@@ -12,9 +12,7 @@ import {
   makeStyles,
   FormHelperText
 } from '@material-ui/core';
-import { useDispatch } from 'react-redux';
 import { useSnackbar } from 'notistack';
-import { useNavigate } from 'react-router-dom';
 import ComboBox from './ComboBox';
 
 /* eslint-disable */
@@ -43,21 +41,14 @@ const AssignResource = ({
   setAssignAreaDisabled
 }) => {
   const [value, setValue] = React.useState(null);
-
-  const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const dispatch = useDispatch();
 
   const classes = useStyles();
 
   const handleSubmit = (evt) => {
     evt.preventDefault();
     if (value !== null) {
-      // dispatch(
-      //   action({ resourceId: value.id, data }, enqueueSnackbar, setValue)
-      // );
       action.mutate({ resourceId: value.id, data });
-      // window.location.reload();
       if (setRole) {
         setRole(value.id);
       }
